@@ -53,6 +53,11 @@ int main(int argc, char *argv[]) {
     // Start to listen for incoming connections
     std::thread listener_thread(listen_for_connections, sockfd);
 
+    // Display menu and wait for user input
+    menu();
+
+    // Wait for the listener thread to finish
+    listener_thread.join();
 
     return 0;
 }
