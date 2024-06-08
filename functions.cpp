@@ -74,7 +74,24 @@ void list_neighbors(std::vector<Neighbor> &neighbors) {
     }
 }
 
-void menu(std::vector<Neighbor> &neighbors) {
+void send_hello(std::vector<Neighbor> &neighbors, std::string address, int port, int &seqno, int &ttl) {
+    // Display neighbors
+    std::cout << "Escolha o vizinho: " << std::endl;
+    list_neighbors(neighbors);
+    int neighbor_index;
+    std::cin >> neighbor_index;
+    if (neighbor_index < 0 || neighbor_index >= (int) neighbors.size()) {
+        std::cerr << "Vizinho inválido" << std::endl;
+        return;
+    }
+
+    // Send HELLO to neighbor
+    std::cout << "Encaminhando mensagem \"" << address << ":" << port << " " << seqno++ << " " << ttl << " HELLO\" para " << neighbors[neighbor_index].get_address() << ":" << neighbors[neighbor_index].get_port() << std::endl;
+    //TODO: send HELLO message
+}
+
+void menu(std::vector<Neighbor> &neighbors, std::string address, int port) {
+    int ttl = 100, seqno = 1;
     // Display menu
     std::cout << "Escolha o comando:" << std::endl;
     std::cout << "\t[0] Listar vizinhos" << std::endl;
@@ -94,7 +111,7 @@ void menu(std::vector<Neighbor> &neighbors) {
         list_neighbors(neighbors);
         break;
         case 1:
-     //   send_hello();
+        send_hello(neighbors, address, port, seqno, ttl);
         break;
         case 2:
       //  search_flooding();
