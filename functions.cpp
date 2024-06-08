@@ -57,3 +57,11 @@ void add_neighbors (std::ifstream &neighbors_file, std::vector<Neighbor> &neighb
         neighbors.push_back(Neighbor(address, port));
     }
 }
+
+void listen_for_connections (int sockfd) {
+    // Listen for incoming connections
+    if (listen(sockfd, 5) < 0) {
+        std::cerr << "Erro ao ouvir conexões" << std::endl;
+        return;
+    }
+}

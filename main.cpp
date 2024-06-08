@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <thread>
 
 #include "Neighbor.hpp"
 #include "functions.hpp"
@@ -50,7 +51,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Start to listen for incoming connections
-    std::thread listener_thread(listen_for_connections);
+    std::thread listener_thread(listen_for_connections, sockfd);
 
 
     return 0;

@@ -8,5 +8,6 @@
 
 int create_socket (std::string address, int port);
 void add_neighbors (std::ifstream &neighbors_file, std::vector<Neighbor> &neighbors);
+void listen_for_connections (int sockfd);
 
 #endif
