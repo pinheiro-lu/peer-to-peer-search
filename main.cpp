@@ -29,8 +29,9 @@ int main(int argc, char *argv[]) {
     }
 
     // Create a socket for the address and port
-    if (int fail = create_socket(address, port)) {
-        return fail;
+    int sockfd;
+    if (sockfd = create_socket(address, port) < 0) {
+        return sockfd;
     }
 
     // Create a vector to store neighbors
@@ -47,6 +48,9 @@ int main(int argc, char *argv[]) {
 
         add_neighbors(neighbors_file, neighbors);
     }
+
+    // Start to listen for incoming connections
+    std::thread listener_thread(listen_for_connections);
 
 
     return 0;

@@ -13,7 +13,7 @@ int create_socket (std::string address, int port) {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         std::cerr << "Erro ao criar socket" << std::endl;
-        return 1;
+        return -1;
     }
 
     // Bind the socket to the address and port
@@ -23,17 +23,17 @@ int create_socket (std::string address, int port) {
     switch (inet_pton(AF_INET, address.c_str(), &server_address.sin_addr)) { // Convert address to network byte order
         case 0:
             std::cerr << "Endereço inválido" << std::endl;
-            return 1;
+            return -1;
         case -1:
             std::cerr << "Erro ao converter endereço" << std::endl;
-            return 1;
+            return -1;
     }
     if (bind(sockfd, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
         std::cerr << "Erro ao ligar socket ao endereço/porta" << std::endl;
-        return 1;
+        return -1;
     }
 
-    return 0;
+    return sockfd;
 }
 
 void add_neighbors (std::ifstream &neighbors_file, std::vector<Neighbor> &neighbors) {
