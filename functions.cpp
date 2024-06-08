@@ -66,7 +66,15 @@ void listen_for_connections (int sockfd) {
     }
 }
 
-void menu() {
+void list_neighbors(std::vector<Neighbor> &neighbors) {
+    // List neighbors
+    std::cout << "Ha " << neighbors.size() << " vizinhos na tabela:" << std::endl;
+    for (int i = 0; i < (int) neighbors.size(); i++) {
+        std::cout << "\t" << "[" << i << "] " << neighbors[i].get_address() << " " << neighbors[i].get_port() << std::endl;
+    }
+}
+
+void menu(std::vector<Neighbor> &neighbors) {
     // Display menu
     std::cout << "Escolha o comando:" << std::endl;
     std::cout << "\t[0] Listar vizinhos" << std::endl;
@@ -83,7 +91,7 @@ void menu() {
     std::cin >> command;
     switch (command) {
         case 0:
-    //    list_neighbors();
+        list_neighbors(neighbors);
         break;
         case 1:
      //   send_hello();

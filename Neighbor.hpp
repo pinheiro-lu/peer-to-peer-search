@@ -6,6 +6,8 @@
 class Neighbor {
     public:
         Neighbor(std::string address, int port) : address(address), port(port) {}
+        std::string get_address() { return address; }
+        int get_port() { return port; }
     private:
         std::string address;
         int port;
