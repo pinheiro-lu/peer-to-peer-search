@@ -4,6 +4,9 @@
 #include <arpa/inet.h>
 #include <string>
 #include <fstream>
+#include <unistd.h>
+#include <sstream>
+#include <vector>
 
 #include "Neighbor.hpp"
 #include "functions.hpp"
@@ -36,6 +39,20 @@ int create_socket (std::string address, int port) {
     return sockfd;
 }
 
+void add_neighbor (std::vector<Neighbor> &neighbors, std::string address, int port) {
+    // Check if neighbor is already in the list
+    for (Neighbor neighbor : neighbors) {
+        if (neighbor.get_address() == address && neighbor.get_port() == port) {
+            std::cout << "\tVizinho ja esta na tabela: " << address << ":" << port << std::endl;
+            return;
+        }
+    }
+
+    // Add neighbor
+    std::cout << "\tAdicionando vizinho na tabela: " << address << ":" << port << std::endl;
+    neighbors.push_back(Neighbor(address, port));
+}
+
 void add_neighbors (std::ifstream &neighbors_file, std::vector<Neighbor> &neighbors) {
     std::string line;
     while (std::getline(neighbors_file, line)) {
@@ -58,10 +75,59 @@ void add_neighbors (std::ifstream &neighbors_file, std::vector<Neighbor> &neighb
     }
 }
 
-void listen_for_connections (int sockfd) {
+void listen_for_connections (int sockfd, std::vector<Neighbor> &neighbors) {
     // Listen for incoming connections
-    if (listen(sockfd, 5) < 0) {
+    if (listen(sockfd, 5) < 0) { // 5 is the maximum number of pending connections
         std::cerr << "Erro ao ouvir conexões" << std::endl;
+        return;
+    }
+
+    // Accept incoming connections
+    struct sockaddr_in client_address;
+    socklen_t client_address_size = sizeof(client_address);
+    int client_sockfd = accept(sockfd, (struct sockaddr *)&client_address, &client_address_size);
+    if (client_sockfd < 0) {
+        std::cerr << "Erro ao aceitar conexão" << std::endl;
+        return;
+    }
+
+    // Buffer for received message
+    char buffer[1024] = {0};
+
+    // Receive message
+    if (recv(client_sockfd, buffer, sizeof buffer, 0) < 0) {
+        std::cerr << "Erro ao receber mensagem" << std::endl;
+        return;
+    }
+
+    // Parse message
+    std::stringstream ss(buffer);
+    std::string origin, message;
+    int seqno, ttl;
+    ss >> origin >> seqno >> ttl >> message;
+
+    // Check if message is HELLO
+    if (message.find("HELLO") == std::string::npos) {
+        std::cerr << "Mensagem inesperada: " << message << std::endl;
+        return;
+    } 
+
+    // Display received message
+    std::cout << "Mensagem recebida: \"" << buffer << "\"" << std::endl;
+
+    // Parse origin address and port
+    std::string address = origin.substr(0, origin.find(":"));
+    int port = std::stoi(origin.substr(origin.find(":") + 1));
+
+    // Add origin to neighbors
+    add_neighbor(neighbors, address, port);
+
+    // Create HELLO_OK message
+    std::string response = "HELLO_OK";
+
+    // Send HELLO_OK to origin
+    if (send(client_sockfd, response.c_str(), response.size(), 0) < 0) {
+        std::cerr << "Erro ao enviar mensagem" << std::endl;
         return;
     }
 }
@@ -85,9 +151,68 @@ void send_hello(std::vector<Neighbor> &neighbors, std::string address, int port,
         return;
     }
 
+    // Get neighbor
+    Neighbor neighbor = neighbors[neighbor_index];
+
+    // Increment sequence number
+    seqno++;
+
+    // Create HELLO message
+    std::string message = address + ":" + std::to_string(port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " HELLO";
+
     // Send HELLO to neighbor
-    std::cout << "Encaminhando mensagem \"" << address << ":" << port << " " << seqno++ << " " << ttl << " HELLO\" para " << neighbors[neighbor_index].get_address() << ":" << neighbors[neighbor_index].get_port() << std::endl;
-    //TODO: send HELLO message
+    std::cout << "Encaminhando mensagem \"" << message << "\" para " << neighbor.get_address() << ":" << neighbor.get_port() << std::endl;
+    
+    // Create a socket for IPv4 (AF_INET), TCP (SOCK_STREAM), and default protocol (0)
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) {
+        std::cerr << "Erro ao criar socket" << std::endl;
+        return;
+    }
+
+    // Connect to the neighbor
+    struct sockaddr_in neighbor_address;
+    neighbor_address.sin_family = AF_INET;
+    neighbor_address.sin_port = htons(neighbor.get_port()); // Convert port to network byte order
+    switch (inet_pton(AF_INET, neighbor.get_address().c_str(), &neighbor_address.sin_addr)) { // Convert address to network byte order
+        case 0:
+            std::cerr << "Endereço inválido" << std::endl;
+            return;
+        case -1:
+            std::cerr << "Erro ao converter endereço" << std::endl;
+            return;
+    }
+    if (connect(sockfd, (struct sockaddr *)&neighbor_address, sizeof(neighbor_address)) < 0) {
+        std::cout << "Erro ao conectar ao vizinho" << std::endl; // on stdout because it's expected
+        return;
+    }
+
+    // Send message
+    if (send(sockfd, message.c_str(), message.size(), 0) < 0) {
+        std::cerr << "Erro ao enviar mensagem" << std::endl;
+        return;
+    }
+
+    // Buffer for received message
+    char buffer[1024] = {0};
+
+    // Receive message
+    if (recv(sockfd, buffer, sizeof buffer, 0) < 0) {
+        std::cout << "Erro ao receber mensagem" << std::endl;
+        return;
+    }
+
+    // Check if message is HELLO_OK
+    std::string expected_message = "HELLO_OK";
+    if (std::string(buffer).find(expected_message) == std::string::npos) {
+        std::cout << "Mensagem inesperada: " << buffer << std::endl;
+        return;
+    }
+
+    std::cout << "\tEnvio feito com sucesso: \"" << message << "\"" << std::endl;
+
+    // Close socket
+    close(sockfd);
 }
 
 void menu(std::vector<Neighbor> &neighbors, std::string address, int port) {

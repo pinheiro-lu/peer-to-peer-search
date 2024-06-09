@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 
     // Create a socket for the address and port
     int sockfd;
-    if (sockfd = create_socket(address, port) < 0) {
+    if ((sockfd = create_socket(address, port)) < 0) {
         return sockfd;
     }
 
@@ -51,13 +51,10 @@ int main(int argc, char *argv[]) {
     }
 
     // Start to listen for incoming connections
-    std::thread listener_thread(listen_for_connections, sockfd);
+    std::thread listener_thread(listen_for_connections, std::ref(sockfd), std::ref(neighbors));
 
     // Display menu and wait for user input
     menu(neighbors, address, port);
-
-    // Wait for the listener thread to finish
-    listener_thread.join();
 
     return 0;
 }
