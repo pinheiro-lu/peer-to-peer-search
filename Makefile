@@ -8,7 +8,7 @@ CXXFLAGS = -Wall -Wextra -std=c++11
 OUTPUT = ep_distsys
 
 # List of source files
-SOURCES = main.cpp functions.cpp 
+SOURCES = main.cpp functions.cpp  SocketManager.cpp
 
 # Default target
 all: $(OUTPUT)

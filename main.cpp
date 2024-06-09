@@ -5,6 +5,7 @@
 
 #include "Neighbor.hpp"
 #include "functions.hpp"
+#include "SocketManager.hpp"
 
 int main(int argc, char *argv[]) {
     // Check if the user provided the address:port argument
@@ -29,14 +30,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Create a socket for the address and port
-    int sockfd;
-    if ((sockfd = create_socket(address, port)) < 0) {
-        return sockfd;
-    }
-
-    // Create a vector to store neighbors
-    std::vector<Neighbor> neighbors;
+    SocketManager socket_manager = SocketManager(address, port);
 
     // Add neighbors if provided
     if (argc > 2) {
@@ -47,14 +41,14 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        add_neighbors(neighbors_file, neighbors);
+        socket_manager.add_neighbors_from_file(neighbors_file);
     }
 
     // Start to listen for incoming connections
-    std::thread listener_thread(listen_for_connections, std::ref(sockfd), std::ref(neighbors));
+    std::thread listener_thread([&]() { socket_manager.listen_for_connections(); });
 
     // Display menu and wait for user input
-    menu(neighbors, address, port);
+    menu(socket_manager);
 
     return 0;
 }
