@@ -218,4 +218,64 @@ void SocketManager::listen_for_connections() {
         std::cerr << "Erro ao enviar mensagem" << std::endl;
         return;
     }
+
+    void SocketManager::search_random_walk(const std::string& key, int seqno) {
+        // Choose a random neighbor
+        std::string message = "<ORIGIN> " + std::to_string(seqno) + " " + std::to_string(ttl) + " SEARCH RW " + std::to_string(port) + " " + key + " 1";
+        
+        // Choose a random neighbor
+        if (neighbors.empty()) {
+            std::cerr << "Nenhum vizinho disponível para enviar mensagem de busca." << std::endl;
+            return;
+        }
+        int random_index = rand() % neighbors.size();
+        Neighbor random_neighbor = neighbors[random_index];
+
+        // Send message to the random neighbor
+        if (!send_message_to_neighbor(message, random_neighbor)) {
+            std::cerr << "Erro ao enviar mensagem de busca para vizinho." << std::endl;
+            return;
+        }
+
+        // Display sent search message
+        std::cout << "Mensagem de busca enviada: " << message << std::endl;
+    }
+
+    bool SocketManager::send_message_to_neighbor(const std::string& message, const Neighbor& neighbor) {
+        // Create a socket for IPv4 (AF_INET), TCP (SOCK_STREAM), and default protocol (0)
+        int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (sockfd < 0) {
+            std::cerr << "Erro ao criar socket" << std::endl;
+            return false;
+        }
+
+        // Connect to the neighbor
+        struct sockaddr_in neighbor_sockaddr;
+        neighbor_sockaddr.sin_family = AF_INET;
+        neighbor_sockaddr.sin_port = htons(neighbor.get_port()); // Convert port to network byte order
+        switch (inet_pton(AF_INET, neighbor.get_address().c_str(), &neighbor_sockaddr.sin_addr)) { // Convert address to network byte order
+            case 0:
+                std::cerr << "Endereço inválido" << std::endl;
+                return false;
+            case -1:
+                std::cerr << "Erro ao converter endereço" << std::endl;
+                return false;
+        }
+        if (connect(sockfd, (struct sockaddr *)&neighbor_sockaddr, sizeof(neighbor_sockaddr)) < 0) {
+            std::cerr << "Erro ao conectar ao vizinho" << std::endl;
+            return false;
+        }
+
+        // Send message to neighbor
+        if (send(sockfd, message.c_str(), message.size(), 0) < 0) {
+            std::cerr << "Erro ao enviar mensagem" << std::endl;
+            close(sockfd);
+            return false;
+        }
+
+        // Close socket
+        close(sockfd);
+
+        return true;
+    }
 }
