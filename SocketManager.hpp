@@ -17,6 +17,7 @@ class SocketManager {
         std::vector<Neighbor> neighbors;
         int seqno = 1;
         int ttl = 100;
+        std::map<std::string, std::string> key_value;
         std::map<std::string, int> search_message_counters;
         std::map<std::string, std::vector<int>> search_hop_counts;
 

@@ -2,6 +2,30 @@
 
 #include "functions.hpp"
 #include "SocketManager.hpp"
+#include "NeighborManager.hpp"
+#include "MessageSender.hpp"
+
+void choose_to_send_hello(NeighborManager neighbor_manager, MessageSender message_sender)
+{
+  // Display neighbors
+  std::cout << "Escolha o vizinho: " << std::endl;
+  neighbor_manager.list_neighbors();
+  int neighbor_index;
+  std::cin >> neighbor_index;
+
+  std::vector<Neighbor> neighbors = neighbor_manager.get_neighbors();
+
+  if (neighbor_index < 0 || neighbor_index >= (int)neighbors.size())
+  {
+    std::cerr << "Vizinho inválido" << std::endl;
+    return;
+  }
+
+  // Get neighbor
+  Neighbor neighbor = neighbors[neighbor_index];
+
+  message_sender.send_hello(neighbor.get_address(), neighbor.get_port());
+}
 
 void menu(SocketManager &socket_manager) {
     // Display menu
