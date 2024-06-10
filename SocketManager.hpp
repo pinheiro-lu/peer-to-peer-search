@@ -20,6 +20,7 @@ class SocketManager {
         void add_neighbor(std::string address, int port);
 
         void search_random_walk(const std::string& key, int seqno);
+        void search_depth_first(const std::string& key, int seqno);
 
     public:
         SocketManager(std::string address, int port);

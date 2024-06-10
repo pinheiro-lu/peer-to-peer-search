@@ -278,4 +278,103 @@ void SocketManager::listen_for_connections() {
 
         return true;
     }
+
+    void SocketManager::search_depth_first(const std::string& key, int seqno) {
+        std::string origin = address + ":" + std::to_string(port);
+        std::string message = "<ORIGIN> " + origin + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " SEARCH BP " + std::to_string(port) + " " + key + " 1";
+        
+        std::vector<Neighbor> candidate_neighbors(neighbors); // Copy neighbors to candidate neighbors
+        Neighbor active_neighbor = choose_random_neighbor(candidate_neighbors);
+        remove_neighbor_from_candidates(active_neighbor, candidate_neighbors);
+
+        // Send message to active neighbor
+        send_message_to_neighbor(message, active_neighbor);
+    }
+
+    Neighbor SocketManager::choose_random_neighbor(std::vector<Neighbor>& candidates) {
+        if (candidates.empty()) {
+            std::cerr << "No candidate neighbors available." << std::endl;
+        }
+
+        int random_index = rand() % candidates.size();
+        return candidates[random_index];
+    }
+
+    void SocketManager::remove_neighbor_from_candidates(const Neighbor& neighbor, std::vector<Neighbor>& candidates) {
+        auto it = std::find_if(candidates.begin(), candidates.end(), [&](const Neighbor& n) {
+            return n.get_address() == neighbor.get_address() && n.get_port() == neighbor.get_port();
+        });
+
+        if (it != candidates.end()) {
+            candidates.erase(it);
+        }
+    }
+
+    void SocketManager::process_depth_first_search_message(const std::string& message) {
+        // Parse the message
+        std::stringstream ss(message);
+        std::string origin, last_hop_port, key;
+        int seqno, ttl, hop_count;
+        std::string search_mode;
+        ss >> origin >> seqno >> ttl >> search_mode >> last_hop_port >> key >> hop_count;
+
+        // Check if key is in local table
+        if (key_is_in_local_table(key)) {
+            std::cout << "Chave encontrada! Enviando para origem da requisição." << std::endl;
+            send_key_value_to_origin(key, origin);
+            return;
+        }
+
+        // Decrement TTL
+        ttl--;
+        if (ttl <= 0) {
+            std::cout << "TTL igual a zero, descartando mensagem." << std::endl;
+            return;
+        }
+
+        // Check if it's the first time the message is seen
+        if (hop_count == 1) {
+            // Initialize variables if not initialized
+            if (node_mother.empty()) {
+                node_mother = origin;
+                candidate_neighbors = neighbors;
+            }
+
+            // Remove sender from candidate neighbors
+            Neighbor sender(origin);
+            remove_neighbor_from_candidates(sender, candidate_neighbors);
+        }
+
+        // Special conditions checks
+        if (node_mother == address && active_neighbor == sender && candidate_neighbors.empty()) {
+            // End condition, couldn't find the key
+            std::cout << "BP: Não foi possível localizar a chave " << key << std::endl;
+            return;
+        }
+
+        if (!active_neighbor.empty() && active_neighbor != sender) {
+            // Cycle detected, return the message
+            std::cout << "BP: Ciclo detectado, devolvendo a mensagem..." << std::endl;
+            send_message_to_neighbor(message, sender);
+            return;
+        }
+
+        if (candidate_neighbors.empty()) {
+            // No neighbors found the key, backtrack
+            std::cout << "BP: Nenhum vizinho encontrou a chave, retrocedendo..." << std::endl;
+            send_message_to_neighbor(message, node_mother);
+            return;
+        }
+
+        // Select a random neighbor to send the message
+        active_neighbor = choose_random_neighbor(candidate_neighbors);
+        remove_neighbor_from_candidates(active_neighbor, candidate_neighbors);
+
+        // Increment hop count
+        hop_count++;
+
+        // Send message to active neighbor
+        std::string new_message = "<ORIGIN> " + origin + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + search_mode + " " + last_hop_port + " " + key + " " + std::to_string(hop_count);
+        send_message_to_neighbor(new_message, active_neighbor);
+    }
 }

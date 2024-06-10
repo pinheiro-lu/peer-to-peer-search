@@ -35,7 +35,10 @@ void menu(SocketManager &socket_manager) {
         socket_manager.search_random_walk(key, 1); // 1 being the initial sequence number
         break;
         case 4:
-        //search_depth_first();
+        std::cout << "Digite a chave a ser buscada: ";
+        std::string key;
+        std::cin >> key;
+        socket_manager.search_depth_first(key, 1);// 1 being the initial sequence number
         break;
         case 5:
         //show_statistics();
