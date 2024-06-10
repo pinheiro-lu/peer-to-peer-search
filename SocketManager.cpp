@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <sstream>
 #include <thread>
+#include <map>
+#include <cmath>
 
 #include "Neighbor.hpp"
 #include "SocketManager.hpp"
@@ -218,6 +220,167 @@ void SocketManager::listen_for_connections() {
         std::cerr << "Erro ao enviar mensagem" << std::endl;
         return;
     }
+
+    void SocketManager::search_random_walk(const std::string& key, int seqno) {
+        // Choose a random neighbor
+        std::string message = "<ORIGIN> " + std::to_string(seqno) + " " + std::to_string(ttl) + " SEARCH RW " + std::to_string(port) + " " + key + " 1";
+        
+        // Choose a random neighbor
+        if (neighbors.empty()) {
+            std::cerr << "Nenhum vizinho disponível para enviar mensagem de busca." << std::endl;
+            return;
+        }
+        int random_index = rand() % neighbors.size();
+        Neighbor random_neighbor = neighbors[random_index];
+
+        // Send message to the random neighbor
+        if (!send_message_to_neighbor(message, random_neighbor)) {
+            std::cerr << "Erro ao enviar mensagem de busca para vizinho." << std::endl;
+            return;
+        }
+
+        // Display sent search message
+        std::cout << "Mensagem de busca enviada: " << message << std::endl;
+    }
+
+    bool SocketManager::send_message_to_neighbor(const std::string& message, const Neighbor& neighbor) {
+        // Create a socket for IPv4 (AF_INET), TCP (SOCK_STREAM), and default protocol (0)
+        int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (sockfd < 0) {
+            std::cerr << "Erro ao criar socket" << std::endl;
+            return false;
+        }
+
+        // Connect to the neighbor
+        struct sockaddr_in neighbor_sockaddr;
+        neighbor_sockaddr.sin_family = AF_INET;
+        neighbor_sockaddr.sin_port = htons(neighbor.get_port()); // Convert port to network byte order
+        switch (inet_pton(AF_INET, neighbor.get_address().c_str(), &neighbor_sockaddr.sin_addr)) { // Convert address to network byte order
+            case 0:
+                std::cerr << "Endereço inválido" << std::endl;
+                return false;
+            case -1:
+                std::cerr << "Erro ao converter endereço" << std::endl;
+                return false;
+        }
+        if (connect(sockfd, (struct sockaddr *)&neighbor_sockaddr, sizeof(neighbor_sockaddr)) < 0) {
+            std::cerr << "Erro ao conectar ao vizinho" << std::endl;
+            return false;
+        }
+
+        // Send message to neighbor
+        if (send(sockfd, message.c_str(), message.size(), 0) < 0) {
+            std::cerr << "Erro ao enviar mensagem" << std::endl;
+            close(sockfd);
+            return false;
+        }
+
+        // Close socket
+        close(sockfd);
+
+        return true;
+    }
+
+    void SocketManager::search_depth_first(const std::string& key, int seqno) {
+        std::string origin = address + ":" + std::to_string(port);
+        std::string message = "<ORIGIN> " + origin + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " SEARCH BP " + std::to_string(port) + " " + key + " 1";
+        
+        std::vector<Neighbor> candidate_neighbors(neighbors); // Copy neighbors to candidate neighbors
+        Neighbor active_neighbor = choose_random_neighbor(candidate_neighbors);
+        remove_neighbor_from_candidates(active_neighbor, candidate_neighbors);
+
+        // Send message to active neighbor
+        send_message_to_neighbor(message, active_neighbor);
+    }
+
+    Neighbor SocketManager::choose_random_neighbor(std::vector<Neighbor>& candidates) {
+        if (candidates.empty()) {
+            std::cerr << "No candidate neighbors available." << std::endl;
+        }
+
+        int random_index = rand() % candidates.size();
+        return candidates[random_index];
+    }
+
+    void SocketManager::remove_neighbor_from_candidates(const Neighbor& neighbor, std::vector<Neighbor>& candidates) {
+        auto it = std::find_if(candidates.begin(), candidates.end(), [&](const Neighbor& n) {
+            return n.get_address() == neighbor.get_address() && n.get_port() == neighbor.get_port();
+        });
+
+        if (it != candidates.end()) {
+            candidates.erase(it);
+        }
+    }
+
+    void SocketManager::process_depth_first_search_message(const std::string& message) {
+        // Parse the message
+        std::stringstream ss(message);
+        std::string origin, last_hop_port, key;
+        int seqno, ttl, hop_count;
+        std::string search_mode;
+        ss >> origin >> seqno >> ttl >> search_mode >> last_hop_port >> key >> hop_count;
+
+        // Check if key is in local table
+        if (key_is_in_local_table(key)) {
+            std::cout << "Chave encontrada! Enviando para origem da requisição." << std::endl;
+            send_key_value_to_origin(key, origin);
+            return;
+        }
+
+        // Decrement TTL
+        ttl--;
+        if (ttl <= 0) {
+            std::cout << "TTL igual a zero, descartando mensagem." << std::endl;
+            return;
+        }
+
+        // Check if it's the first time the message is seen
+        if (hop_count == 1) {
+            // Initialize variables if not initialized
+            if (node_mother.empty()) {
+                node_mother = origin;
+                candidate_neighbors = neighbors;
+            }
+
+            // Remove sender from candidate neighbors
+            Neighbor sender(origin);
+            remove_neighbor_from_candidates(sender, candidate_neighbors);
+        }
+
+        // Special conditions checks
+        if (node_mother == address && active_neighbor == sender && candidate_neighbors.empty()) {
+            // End condition, couldn't find the key
+            std::cout << "BP: Não foi possível localizar a chave " << key << std::endl;
+            return;
+        }
+
+        if (!active_neighbor.empty() && active_neighbor != sender) {
+            // Cycle detected, return the message
+            std::cout << "BP: Ciclo detectado, devolvendo a mensagem..." << std::endl;
+            send_message_to_neighbor(message, sender);
+            return;
+        }
+
+        if (candidate_neighbors.empty()) {
+            // No neighbors found the key, backtrack
+            std::cout << "BP: Nenhum vizinho encontrou a chave, retrocedendo..." << std::endl;
+            send_message_to_neighbor(message, node_mother);
+            return;
+        }
+
+        // Select a random neighbor to send the message
+        active_neighbor = choose_random_neighbor(candidate_neighbors);
+        remove_neighbor_from_candidates(active_neighbor, candidate_neighbors);
+
+        // Increment hop count
+        hop_count++;
+
+        // Send message to active neighbor
+        std::string new_message = "<ORIGIN> " + origin + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + search_mode + " " + last_hop_port + " " + key + " " + std::to_string(hop_count);
+        send_message_to_neighbor(new_message, active_neighbor);
+    }
+
+    
 }
 
 void SocketManager::add_key_values_from_file(std::ifstream &key_value_file) {
