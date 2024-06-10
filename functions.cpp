@@ -41,7 +41,7 @@ void menu(SocketManager &socket_manager) {
         socket_manager.search_depth_first(key, 1);// 1 being the initial sequence number
         break;
         case 5:
-        //show_statistics();
+        show_statistics(socket_manager);
         break;
         case 6:
         //change_ttl();

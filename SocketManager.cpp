@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <sstream>
 #include <thread>
+#include <map>
+#include <cmath>
 
 #include "Neighbor.hpp"
 #include "SocketManager.hpp"
@@ -377,4 +379,6 @@ void SocketManager::listen_for_connections() {
         std::string new_message = "<ORIGIN> " + origin + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + search_mode + " " + last_hop_port + " " + key + " " + std::to_string(hop_count);
         send_message_to_neighbor(new_message, active_neighbor);
     }
+
+    
 }
