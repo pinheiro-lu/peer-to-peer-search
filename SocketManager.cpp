@@ -219,3 +219,72 @@ void SocketManager::listen_for_connections() {
         return;
     }
 }
+
+void SocketManager::add_key_values_from_file(std::ifstream &key_value_file) {
+    std::string line;
+    while (std::getline(key_value_file, line)) {
+        if (line.find(" ") == std::string::npos) {
+            std::cerr << "Linha inválida: " << line << std::endl;
+            continue;
+        }
+
+        std::string key = line.substr(0, line.find(" "));
+        std::string value = line.substr(line.find(" ") + 1);
+
+        // Add key-value pair
+        key_value[key] = value;
+    }
+}
+
+void SocketManager::search_flooding() {
+    std::cout << "Digite a chave a ser buscada" << std::endl;
+    std::string key;
+    std::cin >> key;
+
+    // Check if key is in local table
+    if (key_value.find(key) != key_value.end()) {
+        std::cout << "Valor na tabela local!" << std::endl;
+        std::cout << "\tchave: " << key << " valor: " << key_value[key] << std::endl;
+        return;
+    }
+
+    // Create SEARCH message
+    std::string message = address + ":" + std::to_string(port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " SEARCH FL " + std::to_string(port) + " " + key + " 1";
+
+    // Send SEARCH to all neighbors
+    for (Neighbor neighbor : neighbors) {
+        // Create a socket for IPv4 (AF_INET), TCP (SOCK_STREAM), and default protocol (0)
+        int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (sockfd < 0) {
+            std::cerr << "Erro ao criar socket" << std::endl;
+            return;
+        }
+
+        // Connect to the neighbor
+        struct sockaddr_in neighbor_sockaddr;
+        neighbor_sockaddr.sin_family = AF_INET;
+        neighbor_sockaddr.sin_port = htons(neighbor.get_port()); // Convert port to network byte order
+        switch (inet_pton(AF_INET, neighbor.get_address().c_str(), &neighbor_sockaddr.sin_addr)) { // Convert address to network byte order
+            case 0:
+                std::cerr << "Endereço inválido" << std::endl;
+                return;
+            case -1:
+                std::cerr << "Erro ao converter endereço" << std::endl;
+                return;
+        }
+        if (connect(sockfd, (struct sockaddr *)&neighbor_sockaddr, sizeof(neighbor_sockaddr)) < 0) {
+            std::cerr << "Erro ao conectar ao vizinho" << std::endl;
+            return;
+        }
+
+        // Send SEARCH to neighbor
+        if (send(sockfd, message.c_str(), message.size(), 0) < 0) {
+            std::cerr << "Erro ao enviar mensagem" << std::endl;
+            return;
+        }
+
+        // Close socket
+        close(sockfd);
+    }
+
+}

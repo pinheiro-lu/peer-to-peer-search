@@ -42,6 +42,17 @@ int main(int argc, char *argv[]) {
         }
 
         socket_manager.add_neighbors_from_file(neighbors_file);
+
+        if (argc > 3) {
+            std::string key_value_filename = argv[3];
+            std::ifstream key_value_file(key_value_filename);
+            if (!key_value_file) {
+                std::cerr << "Erro ao abrir arquivo de chave-valor" << std::endl;
+                return 1;
+            }
+
+            socket_manager.add_key_values_from_file(key_value_file);
+        }
     }
 
     // Start to listen for incoming connections

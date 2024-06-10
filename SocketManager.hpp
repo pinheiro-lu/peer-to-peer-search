@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <map>
 
 #include "Neighbor.hpp"
 
@@ -15,6 +16,7 @@ class SocketManager {
         std::vector<Neighbor> neighbors;
         int seqno = 1;
         int ttl = 100;
+        std::map <std::string, std::string> key_value;
 
         bool send_hello(std::string neighbor_address, int neighbor_port);
         void add_neighbor(std::string address, int port);
@@ -26,6 +28,8 @@ class SocketManager {
         void choose_to_send_hello();
         void add_neighbors_from_file(std::ifstream &neighbors_file);
         void listen_for_connections();
+        void search_flooding(); 
+        void add_key_values_from_file(std::ifstream &key_value_file);
 };
 
 #endif
