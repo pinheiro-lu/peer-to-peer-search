@@ -20,6 +20,7 @@ class NeighborManager {
         void list_neighbors();
         void add_neighbors_from_file(std::ifstream &neighbors_file, MessageSender &message_sender);
         void process_hello_message(Message &message);
+        void process_bye_message(Message &message);
         SocketManager get_socket_manager();
 };
 

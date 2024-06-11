@@ -60,15 +60,15 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    ConnectionManager connection_manager = ConnectionManager();
+    ConnectionManager *connection_manager = new ConnectionManager();
     SearchManager search_manager = SearchManager(key_value_manager, message_sender, neighbor_manager);
 
     // Start to listen for incoming connections
-    std::thread listener_thread([&]() { connection_manager.listen_for_connections(neighbor_manager.get_socket_manager().get_sockfd(), search_manager); });
+    std::thread listener_thread([&]() { connection_manager->listen_for_connections(neighbor_manager.get_socket_manager().get_sockfd(), search_manager); });
 
     // Display menu and wait for user input
     while (true) {
-        menu(message_sender, search_manager);
+        menu(message_sender, search_manager, *connection_manager);
     }
 
     return 0;

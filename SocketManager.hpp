@@ -18,6 +18,7 @@ class SocketManager {
     public:
         SocketManager(std::string address, int port);
         int get_sockfd();
+        void close_socket();
 };
 
 #endif

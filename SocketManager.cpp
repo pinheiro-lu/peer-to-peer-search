@@ -40,6 +40,10 @@ SocketManager::SocketManager(std::string address, int port) : address(address), 
     }
 }
 
+void SocketManager::close_socket() {
+    close(sockfd);
+}
+
 int SocketManager::get_sockfd() {
     return sockfd;
 }

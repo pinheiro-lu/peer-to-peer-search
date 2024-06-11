@@ -27,6 +27,11 @@ void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in 
 
     // Close the connection
     close(client_sockfd);
+
+    // Remove the socket from the set of connected sockets
+    socket_mutex.lock();
+    connected_sockets.erase(client_sockfd);
+    socket_mutex.unlock();
 };
 
 void ConnectionManager::listen_for_connections(int sockfd, SearchManager &search_manager) {
@@ -49,6 +54,11 @@ void ConnectionManager::listen_for_connections(int sockfd, SearchManager &search
             std::cerr << "Erro ao aceitar conexão" << std::endl;
             return;
         }
+        // Store the connected socket
+        socket_mutex.lock();
+        connected_sockets.insert(client_sockfd);
+        socket_mutex.unlock();
+
         // Create a thread to handle the connection
             std::thread connection_thread(&ConnectionManager::handle_connection, this, client_sockfd, client_address, std::ref(search_manager));
 
@@ -77,5 +87,19 @@ int ConnectionManager::connect_to_neighbor(std::string neighbor_address, int nei
         return -1;
     }
 
+    // Store the connected socket
+    socket_mutex.lock();
+    connected_sockets.insert(sockfd);
+    socket_mutex.unlock();
+
     return sockfd;
+};
+
+void ConnectionManager::close_all_connections() {
+    // Close all connected sockets
+    socket_mutex.lock();
+    for (int sockfd : connected_sockets) {
+        close(sockfd);
+    }
+    socket_mutex.unlock();
 };

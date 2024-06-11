@@ -56,11 +56,24 @@ bool MessageSender::send_message(std::string neighbor_address, int neighbor_port
         return false;
     }
 
+    // Set timeout
+    struct timeval tv;
+    tv.tv_sec = 1; // 1 second timeout
+    tv.tv_usec = 0;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+        std::cerr << "Erro ao definir timeout" << std::endl;
+        return false;
+    }
+
     // Get response
     char buffer[1024] = {0};
-    if (recv(sockfd, buffer, sizeof buffer, 0) < 0) {
-        std::cout << "\tErro ao receber mensagem" << std::endl;
-        return false;
+    int bytes_received = recv(sockfd, buffer, sizeof buffer - 1, 0); // -1 to leave space for null terminator
+    if (bytes_received <= 0) {
+        if (bytes_received == 0) {
+            std::cout << "\tTimeout" << std::endl;
+        } else {
+            std::cout << "\tErro ao receber resposta" << std::endl;
+        }
     }
 
     // Get operation from message

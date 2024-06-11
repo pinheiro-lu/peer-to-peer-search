@@ -30,12 +30,24 @@ void choose_to_send_hello(NeighborManager &neighbor_manager, MessageSender &mess
   message_sender.send_message(neighbor.get_address(), neighbor.get_port(), message);
 }
 
-  float calc_average_hop_count(std::vector<int> &hop_count) {
+float calc_average_hop_count(std::vector<int> &hop_count) {
   float sum = 0;
   for (int i = 0; i < (int)hop_count.size(); i++) {
     sum += hop_count[i];
   }
   return sum / hop_count.size();
+}
+
+void choose_to_send_bye(NeighborManager &neighbor_manager, MessageSender &message_sender) {
+  // Send bye to all neighbors
+  std::vector<Neighbor> neighbors = neighbor_manager.get_neighbors();
+  for (Neighbor neighbor : neighbors) {
+    Message message = Message(message_sender.get_address(), message_sender.get_port(), "BYE");
+    message_sender.send_message(neighbor.get_address(), neighbor.get_port(), message);
+  }
+
+  // Close socket
+  neighbor_manager.get_socket_manager().close_socket();
 }
 
 void show_statistics(SearchManager &search_manager) {
@@ -48,7 +60,7 @@ void show_statistics(SearchManager &search_manager) {
   std::cout << "\tMedia de saltos ate encontrar destino por busca em profundidade: " << calc_average_hop_count(search_manager.get_key_value_manager().get_depth_first_hop_count()) << std::endl;
 }
 
-void menu(MessageSender &message_sender, SearchManager &search_manager) {
+void menu(MessageSender &message_sender, SearchManager &search_manager, ConnectionManager &connection_manager) {
     // Display menu
     std::cout << "Escolha o comando:" << std::endl;
     std::cout << "\t[0] Listar vizinhos" << std::endl;
@@ -95,8 +107,11 @@ void menu(MessageSender &message_sender, SearchManager &search_manager) {
         Message::set_ttl(command);
         break;
         case 9:
-        //exit_program();
-        break;
+        std::cout << "Voce escolheu 9" << std::endl;
+        std::cout << "Saindo..." << std::endl;
+        choose_to_send_bye(search_manager.get_neighbor_manager(), message_sender);
+        connection_manager.close_all_connections();
+        exit(0);
         default:
         std::cerr << "Comando inválido" << std::endl;
     }

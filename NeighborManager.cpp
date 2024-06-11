@@ -72,6 +72,21 @@ void NeighborManager::process_hello_message(Message &message)
     add_neighbor(message.get_origin_address(), message.get_origin_port());
 }
 
+void NeighborManager::process_bye_message(Message &message) {
+    // Display message received
+    std::cout << "Mensagem recebida: \"" << message.get_message() << "\"" << std::endl;
+
+    // Remove neighbor
+    for (int i = 0; i < (int)neighbors.size(); i++) {
+        if (neighbors[i].get_address() == message.get_origin_address() && neighbors[i].get_port() == message.get_origin_port()) {
+            std::cout << "\tRemovendo vizinho da tabela " << neighbors[i].get_address() << ":" << neighbors[i].get_port() << std::endl;
+            neighbors.erase(neighbors.begin() + i);
+            return;
+        }
+    }
+
+}
+
 SocketManager NeighborManager::get_socket_manager()
 {
     return socket_manager;
