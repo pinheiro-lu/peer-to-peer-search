@@ -1,12 +1,13 @@
-#include "SearchManager.hpp"
+#include "neighbor/SearchManager.hpp"
 
-#include <iostream>
-#include <stack>
-#include <unordered_set>
-#include <cstdlib>
-#include <ctime>
+#include <iostream>                      // for operator<<, endl, basic_ostream
+#include <ctime>                         // for time
+#include <cstdlib>                       // for rand, srand
 
-#include "Message.hpp"
+#include "message/Message.hpp"           // for Message, MessageEqual, Messa...
+#include "keyvalue/KeyValueManager.hpp"  // for KeyValueManager
+#include "message/MessageSender.hpp"     // for MessageSender
+#include "neighbor/NeighborManager.hpp"  // for NeighborManager
 
 SearchManager::SearchManager(KeyValueManager &key_value_manager, MessageSender &message_sender, NeighborManager &neighbor_manager) : key_value_manager(key_value_manager), message_sender(message_sender), neighbor_manager(neighbor_manager) {
     std::srand(std::time(nullptr));

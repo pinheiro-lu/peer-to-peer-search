@@ -1,8 +1,12 @@
-#include "MessageHandler.hpp"
+#include "message/MessageHandler.hpp"
 
-#include <iostream>
+#include <iostream>                      // for operator<<, basic_ostream, endl
 
-#include "Message.hpp"
+#include "message/Message.hpp"           // for Message
+#include "keyvalue/KeyValueManager.hpp"  // for KeyValueManager
+#include "message/MessageSender.hpp"     // for MessageSender
+#include "neighbor/NeighborManager.hpp"  // for NeighborManager
+#include "neighbor/SearchManager.hpp"    // for SearchManager
 
 void MessageHandler::process_message(std::string message, std::string sender_address, SearchManager &search_manager, int sockfd) {
     Message message_obj(message);

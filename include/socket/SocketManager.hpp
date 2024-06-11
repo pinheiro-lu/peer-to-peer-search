@@ -1,13 +1,11 @@
 #ifndef SOCKET_MANAGER_HPP
 #define SOCKET_MANAGER_HPP
 
-#include <string>
+#include <string>  // for string
 #include <vector>
 #include <fstream>
 #include <map>
 #include <cmath>
-
-#include "Neighbor.hpp"
 
 class SocketManager {
     private:

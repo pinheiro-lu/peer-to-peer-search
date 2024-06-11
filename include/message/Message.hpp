@@ -2,6 +2,7 @@
 #define MESSAGE_HPP
 
 #include <string>
+#include <cstddef>
 
 class Message {
     private:

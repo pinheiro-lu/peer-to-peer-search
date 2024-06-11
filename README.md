@@ -1,11 +1,25 @@
 # Peer-to-peer search system
 
-Regras para compilar e executar:
+## How to compile
 
-- No terminal, digite e envie make
+- Create a new directory `build` in the project root:
 
-- O código estará compilado.
+```bash
+mkdir build
+cd build
+```
 
-- Digite e envie ./ep_distsys [argumentos]
+- Run `Cmake` and `make`:
 
-- O código será executado.
+```bash
+cmake ..
+make
+```
+
+## How to execute
+
+- Run the executable that was created on compiling:
+
+```bash
+./ep_distsys <endereco>:<porta> [vizinhos.txt [lista_chave_valor.txt]]
+```

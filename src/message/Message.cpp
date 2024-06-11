@@ -1,7 +1,6 @@
-#include "Message.hpp"
+#include "message/Message.hpp"
 
 #include <sstream>
-#include <iostream>
 
 int Message::seqno = 0;
 int Message::ttl = 100;

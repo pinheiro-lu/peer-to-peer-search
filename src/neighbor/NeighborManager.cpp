@@ -1,8 +1,11 @@
-#include <iostream>
+#include <iostream>                   // for cout, cerr
+#include <memory>                     // for allocator_traits<>::value_type
 
-#include "NeighborManager.hpp"
-#include "MessageSender.hpp"
-#include "SocketManager.hpp"
+#include "neighbor/NeighborManager.hpp"
+#include "message/MessageSender.hpp"  // for MessageSender
+#include "socket/SocketManager.hpp"   // for SocketManager
+#include "message/Message.hpp"        // for Message
+#include "neighbor/Neighbor.hpp"      // for Neighbor
 
 NeighborManager::NeighborManager(std::string address, int port) : socket_manager(address, port){}
 

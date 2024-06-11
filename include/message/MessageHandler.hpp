@@ -1,10 +1,14 @@
 #ifndef MESSAGE_HANDLER_HPP
 #define MESSAGE_HANDLER_HPP
 
-#include <string>
+#include <string>  // for string
 
-#include "NeighborManager.hpp"
-#include "SearchManager.hpp"
+#include "neighbor/NeighborManager.hpp"
+#include "neighbor/SearchManager.hpp"
+
+class SearchManager;
+class SearchManager;
+class SearchManager;
 
 class MessageHandler {
     public:

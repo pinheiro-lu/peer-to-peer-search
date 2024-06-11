@@ -1,12 +1,11 @@
 #ifndef CONNECTION_MANAGER_HPP
 #define CONNECTION_MANAGER_HPP
 
-#include <string>
-#include <mutex>
+#include <string>         // for string
+#include <mutex>          // for mutex
+#include <unordered_set>  // for unordered_set
 
-#include "NeighborManager.hpp"
-#include "SearchManager.hpp"
-#include "KeyValueManager.hpp"
+class SearchManager;
 
 class ConnectionManager {
     private:

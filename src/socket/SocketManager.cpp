@@ -1,18 +1,12 @@
-#include <vector>
-#include <string>
-#include <iostream>
-#include <fstream>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <sstream>
-#include <thread>
-#include <map>
-#include <cmath>
+#include <string>
+#include <iostream>
+#include <fstream>
 
-#include "Neighbor.hpp"
-#include "SocketManager.hpp"
+#include "socket/SocketManager.hpp"
 
 SocketManager::SocketManager(std::string address, int port) : address(address), port(port){
     // Create a socket for IPv4 (AF_INET), TCP (SOCK_STREAM), and default protocol (0)

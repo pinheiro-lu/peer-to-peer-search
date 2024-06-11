@@ -1,13 +1,22 @@
 #ifndef SEARCH_MANAGER_HPP
 #define SEARCH_MANAGER_HPP
 
-#include <string>
-#include <unordered_set>
-#include <unordered_map>
+#include <string>                           // for string
+#include <unordered_set>                    // for unordered_set
+#include <unordered_map>                    // for unordered_map
+#include <vector>                           // for vector
+#include <vector>                           // for vector
+#include <vector>                           // for vector
 
-#include "MessageSender.hpp"
-#include "KeyValueManager.hpp"
-#include "NeighborManager.hpp"
+#include "../message/MessageSender.hpp"     // for MessageSender
+#include "../keyvalue/KeyValueManager.hpp"  // for KeyValueManager
+#include "NeighborManager.hpp"              // for NeighborManager
+#include "message/Message.hpp"              // for Message, MessageEqual (pt...
+#include "neighbor/Neighbor.hpp"            // for Neighbor
+#include "message/Message.hpp"              // for Message, MessageEqual (pt...
+#include "neighbor/Neighbor.hpp"            // for Neighbor
+#include "message/Message.hpp"              // for Message, MessageEqual (pt...
+#include "neighbor/Neighbor.hpp"            // for Neighbor
 
 class SearchManager {
     private:

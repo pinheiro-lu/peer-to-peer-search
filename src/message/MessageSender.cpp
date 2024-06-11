@@ -1,13 +1,15 @@
-#include "MessageSender.hpp"
-#include "ConnectionManager.hpp"
+#include "message/MessageSender.hpp"
 
-#include <iostream>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <string>
-#include <sstream>
+#include <unistd.h>             // for close
+#include <sys/socket.h>         // for send, AF_INET, connect, recv, setsockopt
+#include <netinet/in.h>         // for sockaddr_in, htons
+#include <arpa/inet.h>          // for inet_pton
+#include <sys/time.h>           // for timeval
+#include <iostream>             // for operator<<, endl, basic_ostream, ostream
+#include <string>               // for allocator, string, char_traits, opera...
+#include <sstream>              // for basic_istringstream, istringstream
+
+#include "message/Message.hpp"  // for Message
 
 
 MessageSender::MessageSender(std::string address, int port) {

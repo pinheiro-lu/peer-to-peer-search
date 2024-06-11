@@ -3,12 +3,12 @@
 #include <vector>
 #include <thread>
 
-#include "Neighbor.hpp"
-#include "functions.hpp"
-#include "SocketManager.hpp"
-#include "NeighborManager.hpp"
-#include "KeyValueManager.hpp"
-#include "ConnectionManager.hpp"
+#include "connection/ConnectionManager.hpp"
+#include "keyvalue/KeyValueManager.hpp"
+#include "neighbor/NeighborManager.hpp"
+#include "neighbor/SearchManager.hpp"
+#include "message/MessageSender.hpp"
+#include "utils/functions.hpp"
 
 int main(int argc, char *argv[]) {
     // Check if the user provided the address:port argument

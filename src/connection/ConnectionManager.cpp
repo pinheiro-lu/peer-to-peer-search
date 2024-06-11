@@ -1,14 +1,17 @@
-#include "ConnectionManager.hpp"
+#include "connection/ConnectionManager.hpp"
 
-#include <iostream>
-#include <string>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <iostream>
+#include <string>
 #include <thread>
+#include <functional>
 
-#include "MessageHandler.hpp"
+#include "message/MessageHandler.hpp"
+#include "neighbor/NeighborManager.hpp"
+#include "neighbor/SearchManager.hpp"
 
 void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in client_address, SearchManager &search_manager) {
     // Buffer for received message

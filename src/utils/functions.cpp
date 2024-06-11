@@ -1,11 +1,8 @@
 #include <iostream>
 
-#include "functions.hpp"
-#include "SocketManager.hpp"
-#include "NeighborManager.hpp"
-#include "MessageSender.hpp"
-#include "SearchManager.hpp" 
-#include "Message.hpp"
+#include "neighbor/NeighborManager.hpp"
+#include "neighbor/SearchManager.hpp"
+#include "connection/ConnectionManager.hpp"
 
 void choose_to_send_hello(NeighborManager &neighbor_manager, MessageSender &message_sender)
 {

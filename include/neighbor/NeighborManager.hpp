@@ -1,13 +1,20 @@
 #ifndef NEIGHBOR_MANAGER_HPP
 #define NEIGHBOR_MANAGER_HPP
 
-#include <string>
-#include <vector>
-#include <fstream>
+#include <string>                       // for string
+#include <vector>                       // for vector
+#include <fstream>                      // for ifstream
 
-#include "Neighbor.hpp"
-#include "SocketManager.hpp"
-#include "MessageSender.hpp"
+#include "Neighbor.hpp"                 // for Neighbor
+#include "../socket/SocketManager.hpp"  // for SocketManager
+#include "../message/MessageSender.hpp"
+
+class Message;
+class MessageSender;
+class Message;
+class MessageSender;
+class Message;
+class MessageSender;
 
 class NeighborManager {
     private:

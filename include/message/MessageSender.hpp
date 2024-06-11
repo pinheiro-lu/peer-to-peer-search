@@ -1,9 +1,13 @@
 #ifndef MESSAGESENDER_HPP
 #define MESSAGESENDER_HPP
 
-#include <string>
+#include <string>  // for string
 
 #include "Message.hpp"
+
+class Message;
+class Message;
+class Message;
 
 class MessageSender {
     private:
