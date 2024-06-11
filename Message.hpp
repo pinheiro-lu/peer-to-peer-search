@@ -15,6 +15,7 @@ class Message {
         std::string operation;
         std::string mode;
         std::string key;
+        std::string value;
         int hop_count = 1;
         int last_hop_port;
     public:
@@ -25,6 +26,7 @@ class Message {
         std::string get_message_identifier() const;
         std::string get_message();
         std::string get_key();
+        std::string get_value();
         std::string get_origin_address();
         int get_origin_port();
         int get_hop_count();

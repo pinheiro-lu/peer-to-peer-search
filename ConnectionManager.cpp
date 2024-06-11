@@ -11,7 +11,6 @@
 #include "MessageHandler.hpp"
 
 void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in client_address, SearchManager &search_manager) {
-    NeighborManager neighbor_manager = search_manager.get_neighbor_manager();
     // Buffer for received message
     char buffer[1024] = {0};
 
@@ -24,7 +23,7 @@ void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in 
     MessageHandler message_handler;
 
     // Pass the message
-    message_handler.process_message(buffer, inet_ntoa(client_address.sin_addr), neighbor_manager, search_manager, client_sockfd);
+    message_handler.process_message(buffer, inet_ntoa(client_address.sin_addr), search_manager, client_sockfd);
 
     // Close the connection
     close(client_sockfd);

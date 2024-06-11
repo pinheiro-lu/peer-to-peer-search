@@ -21,6 +21,8 @@ Message::Message(std::string message) {
 
     if (operation == "SEARCH") {
         iss >> mode >> last_hop_port >> key >> hop_count;
+    } else if (operation == "VAL") {
+        iss >> mode >> key >> value >> hop_count;
     }
 
 }
@@ -45,6 +47,7 @@ Message::Message(std::string origin_address, int origin_port, std::string operat
     this->origin_address = origin_address;
     this->origin_port = origin_port;
     this->key = key;
+    this->value = value;
     message_seqno = ++seqno;
     this->message = origin_address + ":" + std::to_string(origin_port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + operation + " " + mode + " " + key + " " + value + " " + std::to_string(hop_count);
 }
@@ -56,6 +59,10 @@ std::string Message::get_message() {
 std::string Message::get_key() {
     return key;
 }  
+
+std::string Message::get_value() {
+    return value;
+}
 
 int Message::get_hop_count() {
     return hop_count;

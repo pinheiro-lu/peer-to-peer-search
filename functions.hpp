@@ -6,6 +6,6 @@
 #include "MessageSender.hpp"
 #include "SearchManager.hpp"
 
-void menu(NeighborManager &neighbor_manager, MessageSender &message_sender, SearchManager &search_manager);
+void menu(MessageSender &message_sender, SearchManager &search_manager);
 
 #endif

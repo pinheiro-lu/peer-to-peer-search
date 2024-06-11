@@ -5,6 +5,7 @@
 
 #include "NeighborManager.hpp"
 #include "SearchManager.hpp"
+#include "KeyValueManager.hpp"
 
 class ConnectionManager {
     private:

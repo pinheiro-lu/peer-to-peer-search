@@ -8,7 +8,7 @@
 
 class MessageHandler {
     public:
-        void process_message(std::string message, std::string sender_address, NeighborManager &neighbor_manager, SearchManager &search_manager, int sockfd);
+        void process_message(std::string message, std::string sender_address, SearchManager &search_manager, int sockfd);
 };
 
 #endif

@@ -63,17 +63,13 @@ void NeighborManager::add_neighbors_from_file(std::ifstream &neighbors_file, Mes
     }
 }
 
-void NeighborManager::process_hello_message(Message &message, int sockfd)
+void NeighborManager::process_hello_message(Message &message)
 {
     // Display message received
-    std::cout << "Mensagem recebida: " << message.get_message() << std::endl;
+    std::cout << "Mensagem recebida: \"" << message.get_message() << "\"" << std::endl;
 
     // Add neighbor
     add_neighbor(message.get_origin_address(), message.get_origin_port());
-
-    // Send HELLO_OK message
-    MessageSender response = MessageSender();
-    response.send_reply(sockfd, "HELLO_OK");
 }
 
 SocketManager NeighborManager::get_socket_manager()

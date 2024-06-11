@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 
     // Display menu and wait for user input
     while (true) {
-        menu(neighbor_manager, message_sender, search_manager);
+        menu(message_sender, search_manager);
     }
 
     return 0;

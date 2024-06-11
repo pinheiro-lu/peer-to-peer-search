@@ -30,7 +30,25 @@ void choose_to_send_hello(NeighborManager &neighbor_manager, MessageSender &mess
   message_sender.send_message(neighbor.get_address(), neighbor.get_port(), message);
 }
 
-void menu(NeighborManager &neighbor_manager, MessageSender &message_sender, SearchManager &search_manager) {
+  float calc_average_hop_count(std::vector<int> &hop_count) {
+  float sum = 0;
+  for (int i = 0; i < (int)hop_count.size(); i++) {
+    sum += hop_count[i];
+  }
+  return sum / hop_count.size();
+}
+
+void show_statistics(SearchManager &search_manager) {
+  std::cout << "Estatisticas" << std::endl;
+  std::cout << "\tTotal de mensagens de flooding vistas: " << search_manager.get_flooding_messages_seen() << std::endl;
+  std::cout << "\tTotal de mensagens de random walk vistas: " << search_manager.get_random_walk_messages_seen() << std::endl;
+  std::cout << "\tTotal de mensagens de busca em profundidade vistas: " << search_manager.get_depth_first_messages_seen() << std::endl;
+  std::cout << "\tMedia de saltos ate encontrar destino por flooding: " << calc_average_hop_count(search_manager.get_key_value_manager().get_flooding_hop_count()) << std::endl;
+  std::cout << "\tMedia de saltos ate encontrar destino por random walk: " << calc_average_hop_count(search_manager.get_key_value_manager().get_random_walk_hop_count()) << std::endl;
+  std::cout << "\tMedia de saltos ate encontrar destino por busca em profundidade: " << calc_average_hop_count(search_manager.get_key_value_manager().get_depth_first_hop_count()) << std::endl;
+}
+
+void menu(MessageSender &message_sender, SearchManager &search_manager) {
     // Display menu
     std::cout << "Escolha o comando:" << std::endl;
     std::cout << "\t[0] Listar vizinhos" << std::endl;
@@ -48,10 +66,10 @@ void menu(NeighborManager &neighbor_manager, MessageSender &message_sender, Sear
     std::cin >> command;
     switch (command) {
         case 0:
-        neighbor_manager.list_neighbors();
+        search_manager.get_neighbor_manager().list_neighbors();
         break;
         case 1:
-        choose_to_send_hello(neighbor_manager, message_sender);
+        choose_to_send_hello(search_manager.get_neighbor_manager(), message_sender);
         break;
         case 2:
         std::cout << "Digite a chave a ser buscada" << std::endl;
@@ -59,17 +77,17 @@ void menu(NeighborManager &neighbor_manager, MessageSender &message_sender, Sear
         search_manager.start_search_flooding(key);
         break;
         case 3:
-        std::cout << "Digite a chave a ser buscada: ";
+        std::cout << "Digite a chave a ser buscada" << std::endl;
         std::cin >> key;
         search_manager.start_search_random_walk(key);
         break;
         case 4:
-        std::cout << "Digite a chave a ser buscada: ";
+        std::cout << "Digite a chave a ser buscada" << std::endl;
         std::cin >> key;
         search_manager.start_search_depth_first(key);
         break;
         case 5:
-        //show_statistics(socket_manager);
+        //show_statistics(search_manager);
         break;
         case 6:
         //change_ttl();
