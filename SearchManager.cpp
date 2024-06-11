@@ -10,12 +10,14 @@ void SearchManager::start_search_flooding(std::string key) {
     if (key_value_manager.has_key(key)) {
         std::cout << "Valor na tabela local!" << std::endl;
         std::cout << "\tchave: " << key << " valor: " << key_value_manager.get_value(key) << std::endl;
+        return;
     }
 
     Message message = Message(message_sender.get_address(), message_sender.get_port(), "SEARCH", "FL", message_sender.get_port(), key);
     seen_messages.insert(message);
 
     for (auto &neighbor : neighbor_manager.get_neighbors()) {
+        std::cout << "Enviando mensagem para " << neighbor.get_address() << ":" << neighbor.get_port() << std::endl;
         message_sender.send_message(neighbor.get_address(), neighbor.get_port(), message);
     }
 }
@@ -54,4 +56,8 @@ void SearchManager::process_search_flooding_message(Message &message, std::strin
     } else {
         std::cout << "TTL igual a zero, descartando mensagem" << std::endl;
     }
+}
+
+NeighborManager SearchManager::get_neighbor_manager() {
+    return neighbor_manager;
 }

@@ -9,7 +9,16 @@ int Message::ttl = 100;
 Message::Message(std::string message) {
     this->message = message;
     std::istringstream iss(message);
-    iss >> origin_address >> origin_port >> message_seqno >> message_ttl >> operation;
+    std::string address_port;
+    iss >> address_port >> message_seqno >> message_ttl >> operation;
+
+    // Split address_port into address and port
+    std::string delimiter = ":";
+    size_t pos = 0;
+    pos = address_port.find(delimiter);
+    origin_address = address_port.substr(0, pos);
+    origin_port = std::stoi(address_port.substr(pos + 1));
+
     if (operation == "SEARCH") {
         iss >> mode >> last_hop_port >> key >> hop_count;
     }
@@ -20,7 +29,7 @@ Message::Message(std::string origin_address, int origin_port, std::string operat
     this->origin_address = origin_address;
     this->origin_port = origin_port;
     message_seqno = ++seqno;
-    this->message = origin_address + " " + std::to_string(origin_port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + operation;
+    this->message = origin_address + ":" + std::to_string(origin_port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + operation;
 }
 
 Message::Message(std::string origin_address, int origin_port, std::string operation, std::string mode, int last_hop_port, std::string key) {
@@ -28,7 +37,7 @@ Message::Message(std::string origin_address, int origin_port, std::string operat
     this->origin_port = origin_port;
     this->key = key;
     message_seqno = ++seqno;
-    this->message = origin_address + " " + std::to_string(origin_port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + operation + " " + mode + " " + std::to_string(last_hop_port) + " " + key + " " + std::to_string(hop_count);
+    this->message = origin_address + ":" + std::to_string(origin_port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + operation + " " + mode + " " + std::to_string(last_hop_port) + " " + key + " " + std::to_string(hop_count);
     this->last_hop_port = last_hop_port;
 }
 
@@ -37,7 +46,7 @@ Message::Message(std::string origin_address, int origin_port, std::string operat
     this->origin_port = origin_port;
     this->key = key;
     message_seqno = ++seqno;
-    this->message = origin_address + " " + std::to_string(origin_port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + operation + " " + mode + " " + key + " " + value + " " + std::to_string(hop_count);
+    this->message = origin_address + ":" + std::to_string(origin_port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + operation + " " + mode + " " + key + " " + value + " " + std::to_string(hop_count);
 }
 
 std::string Message::get_message() {

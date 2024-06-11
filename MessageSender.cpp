@@ -66,7 +66,7 @@ bool MessageSender::send_message(std::string neighbor_address, int neighbor_port
     // Get operation from message
     std::istringstream iss(message.get_message());
     std::string operation;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 4; i++) {
         iss >> operation;
     }
 

@@ -34,7 +34,7 @@ void NeighborManager::list_neighbors()
     }
 }
 
-void NeighborManager::add_neighbors_from_file(std::ifstream &neighbors_file, MessageSender message_sender)
+void NeighborManager::add_neighbors_from_file(std::ifstream &neighbors_file, MessageSender &message_sender)
 {
     std::string line;
     while (std::getline(neighbors_file, line))

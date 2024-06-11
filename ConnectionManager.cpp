@@ -10,7 +10,8 @@
 
 #include "MessageHandler.hpp"
 
-void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in client_address, NeighborManager &neighbor_manager, SearchManager &search_manager) {
+void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in client_address, SearchManager &search_manager) {
+    NeighborManager neighbor_manager = search_manager.get_neighbor_manager();
     // Buffer for received message
     char buffer[1024] = {0};
 
@@ -29,7 +30,8 @@ void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in 
     close(client_sockfd);
 };
 
-void ConnectionManager::listen_for_connections(int sockfd, NeighborManager &neighbor_manager, SearchManager &search_manager) {
+void ConnectionManager::listen_for_connections(int sockfd, SearchManager &search_manager) {
+    NeighborManager neighbor_manager = search_manager.get_neighbor_manager();
     while (true)
     {
         // Listen for incoming connections
@@ -49,7 +51,7 @@ void ConnectionManager::listen_for_connections(int sockfd, NeighborManager &neig
             return;
         }
         // Create a thread to handle the connection
-        std::thread connection_thread(&ConnectionManager::handle_connection, this, client_sockfd, client_address, std::ref(neighbor_manager), std::ref(search_manager));
+            std::thread connection_thread(&ConnectionManager::handle_connection, this, client_sockfd, client_address, std::ref(search_manager));
 
         // Detach the thread
         connection_thread.detach();

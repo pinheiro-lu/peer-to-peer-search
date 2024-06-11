@@ -18,6 +18,7 @@ class SearchManager {
         SearchManager(KeyValueManager &key_value_manager, MessageSender &message_sender, NeighborManager &neighbor_manager);
         void start_search_flooding(std::string key);
         void process_search_flooding_message(Message &message, std::string sender_address);
+        NeighborManager get_neighbor_manager();
 };
 
 #endif

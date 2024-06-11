@@ -7,7 +7,7 @@
 #include "SearchManager.hpp" 
 #include "Message.hpp"
 
-void choose_to_send_hello(NeighborManager neighbor_manager, MessageSender message_sender)
+void choose_to_send_hello(NeighborManager &neighbor_manager, MessageSender &message_sender)
 {
   // Display neighbors
   std::cout << "Escolha o vizinho: " << std::endl;

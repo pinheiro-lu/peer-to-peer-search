@@ -8,9 +8,9 @@
 
 class ConnectionManager {
     private:
-        void handle_connection(int sockfd, struct sockaddr_in client_address, NeighborManager &neighbor_manager, SearchManager &search_manager);
+        void handle_connection(int sockfd, struct sockaddr_in client_address, SearchManager &search_manager);
     public:
-        void listen_for_connections(int sockfd, NeighborManager &neighbor_manager, SearchManager &search_manager);
+        void listen_for_connections(int sockfd, SearchManager &search_manager);
         int connect_to_neighbor(std::string neighbor_address, int neighbor_port);
 };
 
