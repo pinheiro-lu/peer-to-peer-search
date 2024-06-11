@@ -6,7 +6,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-std::string ConnectionManager::listen_for_connections(int sockfd) {
+#include "MessageHandler.hpp"
+
+void ConnectionManager::listen_for_connections(int sockfd, NeighborManager &neighbor_manager, SearchManager &search_manager) {
     // Listen for incoming connections
     if (listen(sockfd, 5) < 0) { // 5 is the maximum number of pending connections
         std::cerr << "Erro ao ouvir conexões" << std::endl;
@@ -28,10 +30,14 @@ std::string ConnectionManager::listen_for_connections(int sockfd) {
     // Receive message
     if (recv(client_sockfd, buffer, sizeof buffer, 0) < 0) {
         std::cerr << "Erro ao receber mensagem" << std::endl;
-        return NULL;
+        return;
     }
 
-    return buffer;
+    MessageHandler message_handler;
+
+    // Pass the message and sender address to the message handler
+    message_handler.process_message(buffer, inet_ntoa(client_address.sin_addr), neighbor_manager, search_manager, client_sockfd);
+
 };
 
 int ConnectionManager::connect_to_neighbor(std::string neighbor_address, int neighbor_port) {

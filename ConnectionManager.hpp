@@ -3,9 +3,12 @@
 
 #include <string>
 
+#include "NeighborManager.hpp"
+#include "SearchManager.hpp"
+
 class ConnectionManager {
     public:
-        std::string listen_for_connections(int sockfd);
+        void listen_for_connections(int sockfd, NeighborManager &neighbor_manager, SearchManager &search_manager);
         int connect_to_neighbor(std::string neighbor_address, int neighbor_port);
 };
 

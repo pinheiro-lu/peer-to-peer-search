@@ -1,10 +1,10 @@
 #include <iostream>
 
 #include "NeighborManager.hpp"
+#include "MessageSender.hpp"
+#include "SocketManager.hpp"
 
-NeighborManager::NeighborManager(std::string address, int port) {
-    socket_manager = SocketManager(address, port);
-}
+NeighborManager::NeighborManager(std::string address, int port) : socket_manager(address, port){}
 
 std::vector<Neighbor> NeighborManager::get_neighbors() {
     return neighbors;
@@ -34,7 +34,7 @@ void NeighborManager::list_neighbors()
     }
 }
 
-void NeighborManager::add_neighbors_from_file(std::ifstream &neighbors_file)
+void NeighborManager::add_neighbors_from_file(std::ifstream &neighbors_file, MessageSender message_sender)
 {
     std::string line;
     while (std::getline(neighbors_file, line))
@@ -56,7 +56,25 @@ void NeighborManager::add_neighbors_from_file(std::ifstream &neighbors_file)
         // Add neighbor
         std::cout << "Tentando adicionar vizinho " << neighbor_address << ":" << neighbor_port << std::endl;
 
-        if (send_hello(neighbor_address, neighbor_port))
+        if (message_sender.send_hello(neighbor_address, neighbor_port))
             add_neighbor(neighbor_address, neighbor_port);
     }
+}
+
+void NeighborManager::process_hello_message(Message &message, int sockfd)
+{
+    // Display message received
+    std::cout << "Mensagem recebida: " << message.get_message() << std::endl;
+
+    // Add neighbor
+    add_neighbor(message.get_origin_address(), message.get_origin_port());
+
+    // Send HELLO_OK message
+    MessageSender response = MessageSender();
+    response.send_reply(sockfd, "HELLO_OK");
+}
+
+SocketManager NeighborManager::get_socket_manager()
+{
+    return socket_manager;
 }

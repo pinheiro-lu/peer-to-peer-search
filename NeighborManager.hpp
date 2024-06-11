@@ -7,6 +7,7 @@
 
 #include "Neighbor.hpp"
 #include "SocketManager.hpp"
+#include "MessageSender.hpp"
 
 class NeighborManager {
     private:
@@ -17,7 +18,9 @@ class NeighborManager {
         std::vector<Neighbor> get_neighbors();
         void add_neighbor(std::string address, int port);
         void list_neighbors();
-        void add_neighbors_from_file(std::ifstream &neighbors_file);
+        void add_neighbors_from_file(std::ifstream &neighbors_file, MessageSender message_sender);
+        void process_hello_message(Message &message, int sockfd);
+        SocketManager get_socket_manager();
 };
 
 #endif

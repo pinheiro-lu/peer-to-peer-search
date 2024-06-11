@@ -4,6 +4,7 @@
 #include "SocketManager.hpp"
 #include "NeighborManager.hpp"
 #include "MessageSender.hpp"
+#include "SearchManager.hpp" 
 
 void choose_to_send_hello(NeighborManager neighbor_manager, MessageSender message_sender)
 {
@@ -27,7 +28,7 @@ void choose_to_send_hello(NeighborManager neighbor_manager, MessageSender messag
   message_sender.send_hello(neighbor.get_address(), neighbor.get_port());
 }
 
-void menu(SocketManager &socket_manager) {
+void menu(NeighborManager &neighbor_manager, MessageSender &message_sender, SearchManager &search_manager) {
     // Display menu
     std::cout << "Escolha o comando:" << std::endl;
     std::cout << "\t[0] Listar vizinhos" << std::endl;
@@ -41,31 +42,30 @@ void menu(SocketManager &socket_manager) {
 
     // Wait for user input
     int command;
+    std::string key;
     std::cin >> command;
     switch (command) {
         case 0:
-        socket_manager.list_neighbors();
+        neighbor_manager.list_neighbors();
         break;
         case 1:
-        socket_manager.choose_to_send_hello();
+        choose_to_send_hello(neighbor_manager, message_sender);
         break;
         case 2:
-      //  search_flooding();
+        std::cout << "Digite a chave a ser buscada" << std::endl;
+        std::cin >> key;
+        search_manager.start_search_flooding(key);
         break;
         case 3:
         std::cout << "Digite a chave a ser buscada: ";
-        std::string key;
-        std::cin >> key;
-        socket_manager.search_random_walk(key, 1); // 1 being the initial sequence number
+       // socket_manager.search_random_walk(key, 1); // 1 being the initial sequence number
         break;
         case 4:
         std::cout << "Digite a chave a ser buscada: ";
-        std::string key;
-        std::cin >> key;
-        socket_manager.search_depth_first(key, 1);// 1 being the initial sequence number
+        //socket_manager.search_depth_first(key, 1);// 1 being the initial sequence number
         break;
         case 5:
-        show_statistics(socket_manager);
+        //show_statistics(socket_manager);
         break;
         case 6:
         //change_ttl();

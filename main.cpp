@@ -6,6 +6,9 @@
 #include "Neighbor.hpp"
 #include "functions.hpp"
 #include "SocketManager.hpp"
+#include "NeighborManager.hpp"
+#include "KeyValueManager.hpp"
+#include "ConnectionManager.hpp"
 
 int main(int argc, char *argv[]) {
     // Check if the user provided the address:port argument
@@ -30,7 +33,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    SocketManager socket_manager = SocketManager(address, port);
+    NeighborManager neighbor_manager = NeighborManager(address, port);
+    KeyValueManager key_value_manager = KeyValueManager();
+    MessageSender message_sender = MessageSender(address, port);
 
     // Add neighbors if provided
     if (argc > 2) {
@@ -41,7 +46,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        socket_manager.add_neighbors_from_file(neighbors_file);
+        neighbor_manager.add_neighbors_from_file(neighbors_file, message_sender);
 
         if (argc > 3) {
             std::string key_value_filename = argv[3];
@@ -51,15 +56,20 @@ int main(int argc, char *argv[]) {
                 return 1;
             }
 
-            socket_manager.add_key_values_from_file(key_value_file);
+            key_value_manager.add_key_values_from_file(key_value_file);
         }
     }
 
+    ConnectionManager connection_manager = ConnectionManager();
+    SearchManager search_manager = SearchManager(key_value_manager, message_sender, neighbor_manager);
+
     // Start to listen for incoming connections
-    std::thread listener_thread([&]() { socket_manager.listen_for_connections(); });
+    std::thread listener_thread([&]() { connection_manager.listen_for_connections(neighbor_manager.get_socket_manager().get_sockfd(), neighbor_manager, search_manager); });
 
     // Display menu and wait for user input
-    menu(socket_manager);
+    while (true) {
+        menu(neighbor_manager, message_sender, search_manager);
+    }
 
     return 0;
 }

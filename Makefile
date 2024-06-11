@@ -8,7 +8,7 @@ CXXFLAGS = -Wall -Wextra -std=c++11
 OUTPUT = ep_distsys
 
 # List of source files
-SOURCES = main.cpp functions.cpp  SocketManager.cpp
+SOURCES = main.cpp functions.cpp SocketManager.cpp ConnectionManager.cpp KeyValueManager.cpp Message.cpp MessageHandler.cpp MessageSender.cpp NeighborManager.cpp SearchManager.cpp
 
 # Default target
 all: $(OUTPUT)
@@ -18,7 +18,7 @@ $(OUTPUT): $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 # Rule to compile source files
-%.o: %.cpp
+%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Rule to clean intermediate files

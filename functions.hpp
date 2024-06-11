@@ -2,7 +2,10 @@
 #define FUNCTIONS_HPP
 
 #include "SocketManager.hpp"
+#include "NeighborManager.hpp"
+#include "MessageSender.hpp"
+#include "SearchManager.hpp"
 
-void menu (SocketManager &socket_manager);
+void menu(NeighborManager &neighbor_manager, MessageSender &message_sender, SearchManager &search_manager);
 
 #endif
