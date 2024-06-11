@@ -19,6 +19,10 @@ class SearchManager {
         void start_search_flooding(std::string key);
         void process_search_flooding_message(Message &message, std::string sender_address);
         NeighborManager get_neighbor_manager();
+        void start_search_depth_first(std::string key);
+        void process_search_depth_first_message(Message &message, std::string sender_address);
+        void start_search_random_walk(std::string key);
+        void process_search_random_walk_message(Message &message, std::string sender_address);
 };
 
 #endif
