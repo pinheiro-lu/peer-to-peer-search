@@ -60,10 +60,12 @@ void menu(NeighborManager &neighbor_manager, MessageSender &message_sender, Sear
         break;
         case 3:
         std::cout << "Digite a chave a ser buscada: ";
-       search_manager.start_search_random_walk(key);
+        std::cin >> key;
+        search_manager.start_search_random_walk(key);
         break;
         case 4:
         std::cout << "Digite a chave a ser buscada: ";
+        std::cin >> key;
         search_manager.start_search_depth_first(key);
         break;
         case 5:

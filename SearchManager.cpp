@@ -12,7 +12,6 @@ SearchManager::SearchManager(KeyValueManager &key_value_manager, MessageSender &
     std::srand(std::time(nullptr));
 }
 
-
 void SearchManager::start_search_flooding(std::string key) {
     if (key_value_manager.has_key(key)) {
         std::cout << "Valor na tabela local!" << std::endl;
@@ -134,21 +133,7 @@ NeighborManager SearchManager::get_neighbor_manager() {
 }
 
 void SearchManager::start_search_random_walk(std::string key) {
-    if (key_value_manager.has_key(key)) {
-        std::cout << "Valor na tabela local!" << std::endl;
-        std::cout << "\tchave: " << key << " valor: " << key_value_manager.get_value(key) << std::endl;
-    }
-
-    Message message = Message(message_sender.get_address(), message_sender.get_port(), "SEARCH", "RW", message_sender.get_port(), key);
-    seen_messages.insert(message);
-
-    // Choose a random neighbour to send message
-    auto &neighbors = neighbor_manager.get_neighbors();
-    if (!neighbors.empty()) {
-        int random_index = std::rand() % neighbors.size();
-        auto &random_neighbor = neighbors[random_index];
-        message_sender.send_message(random_neighbor.get_address(), random_neighbor.get_port(), message);
-    }
+    const auto &neighbors = neighbor_manager.get_neighbors();
 }
 
 void SearchManager::process_search_random_walk_message(Message &message, std::string sender_address) {
@@ -172,10 +157,10 @@ void SearchManager::process_search_random_walk_message(Message &message, std::st
 
     // Propagate message to a random neighbor if TTL > 0
     if (message.get_ttl() > 0) {
-        auto &neighbors = neighbor_manager.get_neighbors();
+        const auto &neighbors = neighbor_manager.get_neighbors();
         if (!neighbors.empty()) {
             int random_index = std::rand() % neighbors.size();
-            auto &random_neighbor = neighbors[random_index];
+            auto random_neighbor = neighbors[random_index];
             // Avoid sending message back to sender
             if (random_neighbor.get_address() == sender_address && random_neighbor.get_port() == message.get_last_hop_port()) {
                 if (neighbors.size() == 1) {
