@@ -16,6 +16,13 @@ Message::Message(std::string message) {
 
 }
 
+Message::Message(std::string origin_address, int origin_port, std::string operation) {
+    this->origin_address = origin_address;
+    this->origin_port = origin_port;
+    message_seqno = ++seqno;
+    this->message = origin_address + " " + std::to_string(origin_port) + " " + std::to_string(seqno) + " " + std::to_string(ttl) + " " + operation;
+}
+
 Message::Message(std::string origin_address, int origin_port, std::string operation, std::string mode, int last_hop_port, std::string key) {
     this->origin_address = origin_address;
     this->origin_port = origin_port;

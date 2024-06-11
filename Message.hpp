@@ -19,6 +19,7 @@ class Message {
         int last_hop_port;
     public:
         Message(std::string message);
+        Message(std::string origin_address, int origin_port, std::string operation);
         Message(std::string origin_address, int origin_port, std::string operation, std::string mode, int last_hop_port, std::string key);
         Message(std::string origin_address, int origin_port, std::string operation, std::string mode, std::string key, std::string value, int hop_count);
         std::string get_message_identifier() const;

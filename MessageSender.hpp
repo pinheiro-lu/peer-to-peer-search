@@ -18,8 +18,6 @@ class MessageSender {
         MessageSender();
         std::string get_address();
         int get_port();
-        bool send_hello(std::string neighbor_address, int neighbor_port);
-        bool send_search(std::string neighbor_address, int neighbor_port, std::string mode, std::string key, int hop_count);
         void send_reply(int sockfd, std::string response);
 };
 

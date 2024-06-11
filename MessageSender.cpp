@@ -28,7 +28,7 @@ int MessageSender::get_port() {
 
 bool MessageSender::send_message(std::string neighbor_address, int neighbor_port, Message &message) {
     // Show message
-    std::cout << "Encaminhando mensagem: " << message.get_message() << "para " << neighbor_address << ":" << neighbor_port << std::endl;
+    std::cout << "Encaminhando mensagem: " << message.get_message() << " para " << neighbor_address << ":" << neighbor_port << std::endl;
 
     // Create socket
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);

@@ -5,25 +5,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <thread>
 
 #include "MessageHandler.hpp"
 
-void ConnectionManager::listen_for_connections(int sockfd, NeighborManager &neighbor_manager, SearchManager &search_manager) {
-    // Listen for incoming connections
-    if (listen(sockfd, 5) < 0) { // 5 is the maximum number of pending connections
-        std::cerr << "Erro ao ouvir conexões" << std::endl;
-        return;
-    }
-
-    // Accept incoming connections
-    struct sockaddr_in client_address;
-    socklen_t client_address_size = sizeof(client_address);
-    int client_sockfd = accept(sockfd, (struct sockaddr *)&client_address, &client_address_size);
-    if (client_sockfd < 0) {
-        std::cerr << "Erro ao aceitar conexão" << std::endl;
-        return;
-    }
-
+void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in client_address, NeighborManager &neighbor_manager, SearchManager &search_manager) {
     // Buffer for received message
     char buffer[1024] = {0};
 
@@ -32,12 +19,44 @@ void ConnectionManager::listen_for_connections(int sockfd, NeighborManager &neig
         std::cerr << "Erro ao receber mensagem" << std::endl;
         return;
     }
+    
+    std::cout << "Mensagem recebida: " << buffer << std::endl;
 
     MessageHandler message_handler;
 
-    // Pass the message and sender address to the message handler
+    // Pass the message
     message_handler.process_message(buffer, inet_ntoa(client_address.sin_addr), neighbor_manager, search_manager, client_sockfd);
 
+    // Close the connection
+    close(client_sockfd);
+};
+
+void ConnectionManager::listen_for_connections(int sockfd, NeighborManager &neighbor_manager, SearchManager &search_manager) {
+    while (true)
+    {
+        // Listen for incoming connections
+        if (listen(sockfd, 5) < 0)
+        { // 5 is the maximum number of pending connections
+            std::cerr << "Erro ao ouvir conexões" << std::endl;
+            return;
+        }
+
+        // Accept incoming connections
+        struct sockaddr_in client_address;
+        socklen_t client_address_size = sizeof(client_address);
+        int client_sockfd = accept(sockfd, (struct sockaddr *)&client_address, &client_address_size);
+        if (client_sockfd < 0)
+        {
+            std::cerr << "Erro ao aceitar conexão" << std::endl;
+            return;
+        }
+
+        // Create a thread to handle the connection
+        std::thread connection_thread(&ConnectionManager::handle_connection, this, client_sockfd, client_address, std::ref(neighbor_manager), std::ref(search_manager));
+        
+        // Detach the thread
+        connection_thread.detach();
+    }
 };
 
 int ConnectionManager::connect_to_neighbor(std::string neighbor_address, int neighbor_port) {

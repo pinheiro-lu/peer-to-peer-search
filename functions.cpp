@@ -5,6 +5,7 @@
 #include "NeighborManager.hpp"
 #include "MessageSender.hpp"
 #include "SearchManager.hpp" 
+#include "Message.hpp"
 
 void choose_to_send_hello(NeighborManager neighbor_manager, MessageSender message_sender)
 {
@@ -24,8 +25,9 @@ void choose_to_send_hello(NeighborManager neighbor_manager, MessageSender messag
 
   // Get neighbor
   Neighbor neighbor = neighbors[neighbor_index];
+  Message message = Message(message_sender.get_address(), message_sender.get_port(), "HELLO");
 
-  message_sender.send_hello(neighbor.get_address(), neighbor.get_port());
+  message_sender.send_message(neighbor.get_address(), neighbor.get_port(), message);
 }
 
 void menu(NeighborManager &neighbor_manager, MessageSender &message_sender, SearchManager &search_manager) {

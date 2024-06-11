@@ -56,7 +56,9 @@ void NeighborManager::add_neighbors_from_file(std::ifstream &neighbors_file, Mes
         // Add neighbor
         std::cout << "Tentando adicionar vizinho " << neighbor_address << ":" << neighbor_port << std::endl;
 
-        if (message_sender.send_hello(neighbor_address, neighbor_port))
+        Message message = Message(message_sender.get_address(), message_sender.get_port(), "HELLO");
+
+        if (message_sender.send_message(neighbor_address, neighbor_port, message))
             add_neighbor(neighbor_address, neighbor_port);
     }
 }
