@@ -175,6 +175,9 @@ void SearchManager::process_search_depth_first_message(Message &message, std::st
         // Update last hop port and send message
         message.set_last_hop_port(message_sender.get_port());
         message_sender.send_message(next_neighbor->get_address(), next_neighbor->get_port(), message);
+
+        // Free memory
+        delete next_neighbor;
         
     }
     else
