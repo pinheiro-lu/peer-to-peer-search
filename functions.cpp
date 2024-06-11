@@ -64,7 +64,7 @@ void menu(NeighborManager &neighbor_manager, MessageSender &message_sender, Sear
         break;
         case 4:
         std::cout << "Digite a chave a ser buscada: ";
-        //socket_manager.search_depth_first(key, 1);// 1 being the initial sequence number
+        search_manager.start_search_depth_first(key);
         break;
         case 5:
         //show_statistics(socket_manager);
