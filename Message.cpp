@@ -112,3 +112,7 @@ void Message::set_last_hop_port(int last_hop_port) {
     this->last_hop_port = last_hop_port;
     ++hop_count;
 }
+
+void Message::set_ttl(int ttl) {
+    Message::ttl = ttl;
+}

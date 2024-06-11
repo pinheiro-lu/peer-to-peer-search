@@ -19,6 +19,7 @@ class Message {
         int hop_count = 1;
         int last_hop_port;
     public:
+        static void set_ttl(int ttl);
         Message(std::string message);
         Message(std::string origin_address, int origin_port, std::string operation);
         Message(std::string origin_address, int origin_port, std::string operation, std::string mode, int last_hop_port, std::string key);

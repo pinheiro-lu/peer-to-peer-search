@@ -87,10 +87,12 @@ void menu(MessageSender &message_sender, SearchManager &search_manager) {
         search_manager.start_search_depth_first(key);
         break;
         case 5:
-        //show_statistics(search_manager);
+        show_statistics(search_manager);
         break;
         case 6:
-        //change_ttl();
+        std::cout << "Digite novo valor de TTL" << std::endl;
+        std::cin >> command;
+        Message::set_ttl(command);
         break;
         case 9:
         //exit_program();
