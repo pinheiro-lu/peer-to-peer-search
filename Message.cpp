@@ -1,15 +1,15 @@
 #include "Message.hpp"
 
 #include <sstream>
+#include <iostream>
 
 int Message::seqno = 0;
 int Message::ttl = 100;
 
 Message::Message(std::string message) {
     this->message = message;
-    std::string origin_address_port;
     std::istringstream iss(message);
-    iss >> origin_address_port >> message_seqno >> message_ttl >> operation;
+    iss >> origin_address >> origin_port >> message_seqno >> message_ttl >> operation;
     if (operation == "SEARCH") {
         iss >> mode >> last_hop_port >> key >> hop_count;
     }

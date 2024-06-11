@@ -20,8 +20,6 @@ void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in 
         return;
     }
     
-    std::cout << "Mensagem recebida: " << buffer << std::endl;
-
     MessageHandler message_handler;
 
     // Pass the message
@@ -50,10 +48,9 @@ void ConnectionManager::listen_for_connections(int sockfd, NeighborManager &neig
             std::cerr << "Erro ao aceitar conexão" << std::endl;
             return;
         }
-
         // Create a thread to handle the connection
         std::thread connection_thread(&ConnectionManager::handle_connection, this, client_sockfd, client_address, std::ref(neighbor_manager), std::ref(search_manager));
-        
+
         // Detach the thread
         connection_thread.detach();
     }

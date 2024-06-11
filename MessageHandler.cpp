@@ -1,5 +1,7 @@
 #include "MessageHandler.hpp"
 
+#include <iostream>
+
 #include "Message.hpp"
 
 void MessageHandler::process_message(std::string message, std::string sender_address, NeighborManager &neighbor_manager, SearchManager &search_manager, int sockfd) {
