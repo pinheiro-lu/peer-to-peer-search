@@ -10,6 +10,9 @@
 
 void MessageHandler::process_message(std::string message, std::string sender_address, SearchManager &search_manager, int sockfd) {
     Message message_obj(message);
+
+    // Print received message
+    std::cout << "Mensagem recebida: \"" << message_obj.get_message() << "\"" << std::endl;
     MessageSender response_sender;
     response_sender.send_reply(sockfd, message_obj.get_operation() + "_OK");
 
