@@ -32,6 +32,9 @@ SocketManager::SocketManager(std::string address, int port) : address(address), 
         std::cerr << "Erro ao ligar socket ao endereço/porta" << std::endl;
         return;
     }
+
+    // Print created server
+    std::cout << "Servidor criado: " << address << ":" << port << std::endl;
 }
 
 void SocketManager::close_socket() {
