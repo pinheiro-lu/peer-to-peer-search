@@ -8,7 +8,6 @@ class Message {
     private:
         static int seqno;
         static int ttl;
-        std::string message;
         std::string origin_address;
         int origin_port;
         int message_seqno;

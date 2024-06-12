@@ -27,7 +27,7 @@ void MessageHandler::process_message(std::string message, std::string sender_add
             search_manager.process_search_random_walk_message(message_obj, sender_address);
         }
     } else if (message_obj.get_operation() == "VAL") {
-        std::cout << "Valor encontrado! Chave: " << message_obj.get_key() << " valor: " << message_obj.get_value() << std::endl;
+        std::cout << "\tValor encontrado! Chave: " << message_obj.get_key() << " valor: " << message_obj.get_value() << std::endl;
         search_manager.get_key_value_manager().add_key_value(message_obj.get_key(), message_obj.get_value(), message_obj.get_mode(), message_obj.get_hop_count());
     } else if (message_obj.get_operation() == "BYE") {
         search_manager.get_neighbor_manager().process_bye_message(message_obj);

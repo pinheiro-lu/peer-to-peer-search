@@ -34,7 +34,7 @@ void SearchManager::process_search_flooding_message(Message &message, std::strin
 
     // Check if message has already been seen
     if (seen_messages.find(message) != seen_messages.end()) {
-        std::cout << "Flooding: Mensagem repetida!" << std::endl;
+        std::cout << "\tFlooding: Mensagem repetida!" << std::endl;
         return;
     }
 
@@ -42,9 +42,10 @@ void SearchManager::process_search_flooding_message(Message &message, std::strin
 
     // Check if message is in the local key-value store and send a response for origin
     if (key_value_manager.has_key(message.get_key())) {
-        std::cout << "Chave encontrada!" << std::endl;
+        std::cout << "\tChave encontrada!" << std::endl;
         Message response = Message(message_sender.get_address(), message_sender.get_port(), "VAL", "FL", message.get_key(), key_value_manager.get_value(message.get_key()), message.get_hop_count());
         message_sender.send_message(message.get_origin_address(), message.get_origin_port(), response);
+        return;
     }
 
     // Decrement TTL
@@ -63,7 +64,7 @@ void SearchManager::process_search_flooding_message(Message &message, std::strin
             message_sender.send_message(neighbor.get_address(), neighbor.get_port(), message);
         }
     } else {
-        std::cout << "TTL igual a zero, descartando mensagem" << std::endl;
+        std::cout << "\tTTL igual a zero, descartando mensagem" << std::endl;
     }
 }
 
@@ -116,7 +117,7 @@ void SearchManager::process_search_depth_first_message(Message &message, std::st
     // Check if message is in the local key-value store and send a response to origin
     if (key_value_manager.has_key(message.get_key()))
     {
-        std::cout << "Chave encontrada!" << std::endl;
+        std::cout << "\tChave encontrada!" << std::endl;
         Message response = Message(message_sender.get_address(), message_sender.get_port(), "VAL", "BP", message.get_key(), key_value_manager.get_value(message.get_key()), message.get_hop_count());
         message_sender.send_message(message.get_origin_address(), message.get_origin_port(), response);
         return;
@@ -149,7 +150,7 @@ void SearchManager::process_search_depth_first_message(Message &message, std::st
         // Check if algorithm has finished
         if ((parent_node.at(message).get_address() == message_sender.get_address()) && (parent_node.at(message).get_port() == message_sender.get_port()) && (active_neighbor.at(message).get_address() == sender_address) && active_neighbor.at(message).get_port() == message.get_last_hop_port() && candidate_neighbors[message].empty())
         {
-            std::cout << "BP: Nao foi possivel localizar a chave " << message.get_key() << std::endl;
+            std::cout << "\tBP: Nao foi possivel localizar a chave " << message.get_key() << std::endl;
             return;
         }
 
@@ -158,10 +159,10 @@ void SearchManager::process_search_depth_first_message(Message &message, std::st
         // Check if active neighbor is set and is not the sender
         if (active_neighbor.find(message) != active_neighbor.end() && (active_neighbor.at(message).get_address() != sender_address || active_neighbor.at(message).get_port() != message.get_last_hop_port()))
         {
-            std::cout << "BP: Ciclo detectado, devolvendo a mensagem..." << std::endl;
+            std::cout << "\tBP: Ciclo detectado, devolvendo a mensagem..." << std::endl;
             next_neighbor = new Neighbor(sender_address, message.get_last_hop_port());
         } else if (candidate_neighbors[message].empty()) {
-            std::cout << "BP: nenhum vizinho encontrou a chave, retrocedendo..." << std::endl;
+            std::cout << "\tBP: nenhum vizinho encontrou a chave, retrocedendo..." << std::endl;
             next_neighbor = new Neighbor(parent_node.at(message));
         } else {
             int random_index = std::rand() % candidate_neighbors[message].size();
@@ -182,7 +183,7 @@ void SearchManager::process_search_depth_first_message(Message &message, std::st
     }
     else
     {
-        std::cout << "TTL igual a zero, descartando mensagem" << std::endl;
+        std::cout << "\tTTL igual a zero, descartando mensagem" << std::endl;
     }
 }
 
@@ -212,7 +213,7 @@ void SearchManager::process_search_random_walk_message(Message &message, std::st
 
     // Check if message is in the local key-value store and send a response for origin
     if (key_value_manager.has_key(message.get_key())) {
-        std::cout << "Chave encontrada!" << std::endl;
+        std::cout << "\tChave encontrada!" << std::endl;
         Message response = Message(message_sender.get_address(), message_sender.get_port(), "VAL", "RW", message.get_key(), key_value_manager.get_value(message.get_key()), message.get_hop_count());
         message_sender.send_message(message.get_origin_address(), message.get_origin_port(), response);
         return;
@@ -230,7 +231,7 @@ void SearchManager::process_search_random_walk_message(Message &message, std::st
             // Avoid sending message back to sender
             if (random_neighbor.get_address() == sender_address && random_neighbor.get_port() == message.get_last_hop_port()) {
                 if (neighbors.size() == 1) {
-                    std::cout << "A única opção de vizinho é o remetente, descartando mensagem" << std::endl;
+                    std::cout << "\tA única opção de vizinho é o remetente, descartando mensagem" << std::endl;
                     return;
                 }
                 // select another neighbour if only one neighbour is the sender
@@ -243,7 +244,7 @@ void SearchManager::process_search_random_walk_message(Message &message, std::st
             message_sender.send_message(random_neighbor.get_address(), random_neighbor.get_port(), message);
         }
     } else {
-        std::cout << "TTL igual a zero, descartando mensagem" << std::endl;
+        std::cout << "\tTTL igual a zero, descartando mensagem" << std::endl;
     }
 }
 

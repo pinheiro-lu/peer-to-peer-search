@@ -1,1 +1,12 @@
 oi tchau
+a above
+b backticks
+c C
+d da
+e easier
+f false
+g get_address
+h handle_connection
+i if
+j ja
+k key
