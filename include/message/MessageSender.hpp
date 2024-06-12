@@ -6,8 +6,6 @@
 #include "Message.hpp"
 
 class Message;
-class Message;
-class Message;
 
 class MessageSender {
     private:

@@ -39,6 +39,19 @@ bool MessageSender::send_message(std::string neighbor_address, int neighbor_port
         return false;
     }
 
+    // Bind socket to MessageSender address
+    struct sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    if (inet_pton(AF_INET, address.c_str(), &addr.sin_addr) <= 0) {
+        std::cerr << "Endereço inválido" << std::endl;
+        return false;
+    }
+    addr.sin_port = htons(port);
+    if (bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+        std::cerr << "Erro ao fazer bind" << std::endl;
+        return false;
+    }
+
     // Connect to neighbor
     struct sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
