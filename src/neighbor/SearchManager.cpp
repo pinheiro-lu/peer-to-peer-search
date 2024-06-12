@@ -159,7 +159,6 @@ void SearchManager::process_search_depth_first_message(Message &message, std::st
         // Check if active neighbor is set and is not the sender
         if (active_neighbor.find(message) != active_neighbor.end() && (active_neighbor.at(message).get_address() != sender_address || active_neighbor.at(message).get_port() != message.get_last_hop_port()))
         {
-            std::cout << "Enviei para " << active_neighbor.at(message).get_address() << ":" << active_neighbor.at(message).get_port() << " e recebi de " << sender_address << ":" << message.get_last_hop_port() << std::endl;
             std::cout << "\tBP: Ciclo detectado, devolvendo a mensagem..." << std::endl;
             next_neighbor = new Neighbor(sender_address, message.get_last_hop_port());
         } else if (candidate_neighbors[message].empty()) {
@@ -168,7 +167,7 @@ void SearchManager::process_search_depth_first_message(Message &message, std::st
         } else {
             int random_index = std::rand() % candidate_neighbors[message].size();
             next_neighbor = new Neighbor(candidate_neighbors[message][random_index]);
-            active_neighbor.emplace(message, *next_neighbor);
+            active_neighbor.insert_or_assign(message, *next_neighbor);
 
             // Remove random neighbor from candidate neighbors
             candidate_neighbors[message].erase(candidate_neighbors[message].begin() + random_index);

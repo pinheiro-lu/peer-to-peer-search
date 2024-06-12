@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(ep_distsys)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # Add include directory
 include_directories(include)
