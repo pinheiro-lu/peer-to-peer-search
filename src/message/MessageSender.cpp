@@ -46,7 +46,7 @@ bool MessageSender::send_message(std::string neighbor_address, int neighbor_port
         std::cerr << "Endereço inválido" << std::endl;
         return false;
     }
-    addr.sin_port = htons(port);
+    addr.sin_port = htons(0);
     if (bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         std::cerr << "Erro ao fazer bind" << std::endl;
         return false;
