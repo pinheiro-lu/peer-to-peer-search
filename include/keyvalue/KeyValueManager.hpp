@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <mutex>
 
 class KeyValueManager {
     private:
@@ -12,6 +13,7 @@ class KeyValueManager {
         std::vector<int> flooding_hop_count;
         std::vector<int> depth_first_hop_count;
         std::vector<int> random_walk_hop_count;
+        std::mutex data_mutex;
     public:
         bool has_key(const std::string &key);
         std::string get_value(const std::string &key);

@@ -14,6 +14,9 @@ SearchManager::SearchManager(KeyValueManager &key_value_manager, MessageSender &
 }
 
 void SearchManager::start_search_flooding(std::string key) {
+    // Protect data against concurrent access
+    std::lock_guard<std::mutex> lock(data_mutex);
+
     if (key_value_manager.has_key(key)) {
         std::cout << "Valor na tabela local!" << std::endl;
         std::cout << "\tchave: " << key << " valor: " << key_value_manager.get_value(key) << std::endl;
@@ -21,6 +24,7 @@ void SearchManager::start_search_flooding(std::string key) {
     }
 
     Message message = Message(message_sender.get_address(), message_sender.get_port(), "SEARCH", "FL", message_sender.get_port(), key);
+
     seen_messages.insert(message);
 
     for (Neighbor neighbor : neighbor_manager.get_neighbors()) {
@@ -29,6 +33,8 @@ void SearchManager::start_search_flooding(std::string key) {
 }
 
 void SearchManager::process_search_flooding_message(Message &message, std::string sender_address) {
+    // Protect data against concurrent access
+    std::lock_guard<std::mutex> lock(data_mutex);
     // Increment number of seen messages
     flooding_messages_seen++;
 
@@ -80,6 +86,8 @@ KeyValueManager& SearchManager::get_key_value_manager() {
 
 void SearchManager::start_search_depth_first(std::string key)
 {
+    // Protect data against concurrent access
+    std::lock_guard<std::mutex> lock(data_mutex);
     if (key_value_manager.has_key(key))
     {
         std::cout << "Valor na tabela local!" << std::endl;
@@ -113,6 +121,8 @@ void SearchManager::start_search_depth_first(std::string key)
 
 void SearchManager::process_search_depth_first_message(Message &message, std::string sender_address)
 {
+    // Protect data against concurrent access
+    std::lock_guard<std::mutex> lock(data_mutex);
     // Increment number of seen messages
     depth_first_messages_seen++;
 
@@ -190,6 +200,8 @@ void SearchManager::process_search_depth_first_message(Message &message, std::st
 }
 
 void SearchManager::start_search_random_walk(std::string key) {
+    // Protect data against concurrent access
+    std::lock_guard<std::mutex> lock(data_mutex);
     // Check if key is in the local key-value store
     if (key_value_manager.has_key(key)) {
         std::cout << "Valor na tabela local!" << std::endl;
@@ -210,6 +222,8 @@ void SearchManager::start_search_random_walk(std::string key) {
 }
 
 void SearchManager::process_search_random_walk_message(Message &message, std::string sender_address) {
+    // Protect data against concurrent access
+    std::lock_guard<std::mutex> lock(data_mutex);
     // Increment number of seen messages
     random_walk_messages_seen++;
 
@@ -251,11 +265,17 @@ void SearchManager::process_search_random_walk_message(Message &message, std::st
 }
 
 int SearchManager::get_flooding_messages_seen() {
+    // Protect data against concurrent access
+    std::lock_guard<std::mutex> lock(data_mutex);
     return flooding_messages_seen;
 }
 int SearchManager::get_depth_first_messages_seen() {
+    // Protect data against concurrent access
+    std::lock_guard<std::mutex> lock(data_mutex);
     return depth_first_messages_seen;
 }
 int SearchManager::get_random_walk_messages_seen() {
+    // Protect data against concurrent access
+    std::lock_guard<std::mutex> lock(data_mutex);
     return random_walk_messages_seen;
 }

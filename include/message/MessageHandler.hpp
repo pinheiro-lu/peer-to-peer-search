@@ -7,8 +7,6 @@
 #include "neighbor/SearchManager.hpp"
 
 class SearchManager;
-class SearchManager;
-class SearchManager;
 
 class MessageHandler {
     public:

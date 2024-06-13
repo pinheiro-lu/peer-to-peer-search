@@ -38,7 +38,7 @@ void ConnectionManager::handle_connection(int client_sockfd, struct sockaddr_in 
 };
 
 void ConnectionManager::listen_for_connections(int sockfd, SearchManager &search_manager) {
-    NeighborManager neighbor_manager = search_manager.get_neighbor_manager();
+    NeighborManager& neighbor_manager = search_manager.get_neighbor_manager();
     while (true)
     {
         // Listen for incoming connections

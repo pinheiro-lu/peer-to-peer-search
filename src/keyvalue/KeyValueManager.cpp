@@ -3,6 +3,9 @@
 #include <iostream>
 
 bool KeyValueManager::has_key(const std::string &key) {
+    // Protect access to key_value
+    std::lock_guard<std::mutex> lock(data_mutex);
+
     return key_value.find(key) != key_value.end();
 }
 
@@ -11,6 +14,8 @@ std::string KeyValueManager::get_value(const std::string &key) {
 }
 
 void KeyValueManager::add_key_values_from_file(std::ifstream &key_value_file) {
+    // Protect access to key_value
+    std::lock_guard<std::mutex> lock(data_mutex);
     std::string line;
     while (std::getline(key_value_file, line))
     {
@@ -29,6 +34,8 @@ void KeyValueManager::add_key_values_from_file(std::ifstream &key_value_file) {
 }
 
 void KeyValueManager::add_key_value(const std::string &key, const std::string &value, std::string mode, int hop_count) {
+    // Protect access to key_value
+    std::lock_guard<std::mutex> lock(data_mutex);
     key_value[key] = value;
     if (mode == "FL") {
         flooding_hop_count.push_back(hop_count);
@@ -39,13 +46,19 @@ void KeyValueManager::add_key_value(const std::string &key, const std::string &v
     }
 }
 std::vector<int> &KeyValueManager::get_flooding_hop_count() {
+    // Protect access to data
+    std::lock_guard<std::mutex> lock(data_mutex);
     return flooding_hop_count;
 }
 
 std::vector<int> &KeyValueManager::get_depth_first_hop_count() {
+    // Protect access to data
+    std::lock_guard<std::mutex> lock(data_mutex);
     return depth_first_hop_count;
 }
 
 std::vector<int> &KeyValueManager::get_random_walk_hop_count() {
+    // Protect access to data
+    std::lock_guard<std::mutex> lock(data_mutex);
     return random_walk_hop_count;
 }

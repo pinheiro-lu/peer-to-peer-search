@@ -4,6 +4,7 @@
 #include <string>                       // for string
 #include <vector>                       // for vector
 #include <fstream>                      // for ifstream
+#include <mutex>
 
 #include "Neighbor.hpp"                 // for Neighbor
 #include "../socket/SocketManager.hpp"  // for SocketManager
@@ -11,15 +12,12 @@
 
 class Message;
 class MessageSender;
-class Message;
-class MessageSender;
-class Message;
-class MessageSender;
 
 class NeighborManager {
     private:
         SocketManager socket_manager;
         std::vector<Neighbor> neighbors;
+        std::mutex data_mutex;
     public:
         NeighborManager(std::string address, int port);
         std::vector<Neighbor> get_neighbors();

@@ -10,10 +10,16 @@
 NeighborManager::NeighborManager(std::string address, int port) : socket_manager(address, port){}
 
 std::vector<Neighbor> NeighborManager::get_neighbors() {
+    // Lock mutex
+    std::lock_guard<std::mutex> lock(data_mutex);
+
     return neighbors;
 }
 
 void NeighborManager::add_neighbor(std::string address, int port) {
+    // Lock mutex
+    std::lock_guard<std::mutex> lock(data_mutex);
+
     // Check if the neighbor already exists
     for (Neighbor neighbor : neighbors) {
         if (neighbor.get_address() == address && neighbor.get_port() == port) {
@@ -29,6 +35,9 @@ void NeighborManager::add_neighbor(std::string address, int port) {
 
 void NeighborManager::list_neighbors()
 {
+    // Lock mutex
+    std::lock_guard<std::mutex> lock(data_mutex);
+
     // List neighbors
     std::cout << "Ha " << neighbors.size() << " vizinhos na tabela:" << std::endl;
     for (int i = 0; i < (int)neighbors.size(); i++)
@@ -73,6 +82,9 @@ void NeighborManager::process_hello_message(Message &message)
 }
 
 void NeighborManager::process_bye_message(Message &message) {
+    // Lock mutex
+    std::lock_guard<std::mutex> lock(data_mutex);
+
     // Remove neighbor
     for (int i = 0; i < (int)neighbors.size(); i++) {
         if (neighbors[i].get_address() == message.get_origin_address() && neighbors[i].get_port() == message.get_origin_port()) {
