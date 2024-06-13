@@ -51,6 +51,9 @@ void SearchManager::process_search_flooding_message(Message &message, std::strin
     // Decrement TTL
     message.decrement_ttl();
 
+    // Update last hop port
+    message.set_last_hop_port(message_sender.get_port());
+
     // Propagate message to neighbors if TTL > 0
     if (message.get_ttl() > 0) {
         for (auto &neighbor : neighbor_manager.get_neighbors()) {
@@ -59,8 +62,7 @@ void SearchManager::process_search_flooding_message(Message &message, std::strin
                 continue;
             }
 
-            // Update last hop port and send message
-            message.set_last_hop_port(message_sender.get_port());
+            // Send message
             message_sender.send_message(neighbor.get_address(), neighbor.get_port(), message);
         }
     } else {
